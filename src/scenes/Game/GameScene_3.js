@@ -39,30 +39,30 @@ export class GameScene_3 extends BaseGameScene {
 
         // Set 10 fixed card spawn positions (2 rows of 5)
         this.spawnCardPositions = [
-            { x: centerX - 700, y: centerY - 230 },
-            { x: centerX - 500, y: centerY - 230 },
-            { x: centerX - 300, y: centerY - 230 },
-            { x: centerX - 100, y: centerY - 230 },
-            { x: centerX + 100, y: centerY - 230 },
-            { x: centerX + 300, y: centerY - 230 },
-            { x: centerX + 500, y: centerY - 230 },
-            { x: centerX + 700, y: centerY - 230 },
-            { x: centerX - 700, y: centerY },
-            { x: centerX - 500, y: centerY },
-            { x: centerX - 300, y: centerY },
-            { x: centerX - 100, y: centerY },
-            { x: centerX + 100, y: centerY },
-            { x: centerX + 300, y: centerY },
-            { x: centerX + 500, y: centerY },
-            { x: centerX + 700, y: centerY },
-            { x: centerX - 700, y: centerY + 230 },
-            { x: centerX - 500, y: centerY + 230 },
-            { x: centerX - 300, y: centerY + 230 },
-            { x: centerX - 100, y: centerY + 230 },
-            { x: centerX + 100, y: centerY + 230 },
-            { x: centerX + 300, y: centerY + 230 },
-            { x: centerX + 500, y: centerY + 230 },
-            { x: centerX + 700, y: centerY + 230 }
+            { x: centerX - 700, y: centerY - 180 },
+            { x: centerX - 500, y: centerY - 180 },
+            { x: centerX - 300, y: centerY - 180 },
+            { x: centerX - 100, y: centerY - 180 },
+            { x: centerX + 100, y: centerY - 180 },
+            { x: centerX + 300, y: centerY - 180 },
+            { x: centerX + 500, y: centerY - 180 },
+            { x: centerX + 700, y: centerY - 180 },
+            { x: centerX - 700, y: centerY + 50 },
+            { x: centerX - 500, y: centerY + 50 },
+            { x: centerX - 300, y: centerY + 50 },
+            { x: centerX - 100, y: centerY + 50 },
+            { x: centerX + 100, y: centerY + 50 },
+            { x: centerX + 300, y: centerY + 50 },
+            { x: centerX + 500, y: centerY + 50 },
+            { x: centerX + 700, y: centerY + 50 },
+            { x: centerX - 700, y: centerY + 280 },
+            { x: centerX - 500, y: centerY + 280 },
+            { x: centerX - 300, y: centerY + 280 },
+            { x: centerX - 100, y: centerY + 280 },
+            { x: centerX + 100, y: centerY + 280 },
+            { x: centerX + 300, y: centerY + 280 },
+            { x: centerX + 500, y: centerY + 280 },
+            { x: centerX + 700, y: centerY + 280 }
         ];
 
         // Card pairs data (12 pairs = 24 cards)
@@ -120,7 +120,7 @@ export class GameScene_3 extends BaseGameScene {
             // Card front (hidden initially) - scale to match card back size
             const cardFront = this.add.image(0, 0, cardType)
                 .setVisible(false)
-                .setScale(0.55);
+                .setScale(0.58);
 
             card.add([cardBack, cardFront]);
 
@@ -157,6 +157,10 @@ export class GameScene_3 extends BaseGameScene {
         this.flipCard(card, true);
         this.flippedCards.push(card);
 
+        for (let i = 1; this.flippedCards >= 0; i--) {
+            this.flippedCards[i].setDepth(500 + i); // Ensure flipped cards are on top
+        }
+
         // Check if two cards are flipped
         if (this.flippedCards.length === 2) {
             this.isChecking = true;
@@ -168,6 +172,7 @@ export class GameScene_3 extends BaseGameScene {
         card.isFlipped = faceUp;
         card.cardBack.setVisible(!faceUp);
         card.cardFront.setVisible(faceUp);
+
 
         // Optional: Add flip animation
         this.tweens.add({
