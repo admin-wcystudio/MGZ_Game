@@ -379,14 +379,19 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
 
         // Create image for displaying question content
         this.contentImage = scene.add.image(0, 50, '').setDepth(200).setVisible(false);
-        this.add([this.contentImage]);
+
+        this.questionBackground = scene.add.image(0, 50, '').setDepth(199).setVisible(false);
+
+        this.add([this.contentImage, this.questionBackground]);
 
         // 2. 確認按鈕 (初始隱藏)
         this.confirmBtn = new CustomButton(scene, 0, 380,
-            'game5_confirm_button', 'game5_confirm_button_select', () => {
+            'game7_confirm_button', 'game7_confirm_button_select', () => {
                 this.checkAnswer();
             });
         this.add(this.confirmBtn);
+
+        this.confirmBtn.setVisible(false); // 初始隱藏，等選擇答案後才顯示
 
         this.optionButtons = [];
         this.showQuestion();
@@ -395,11 +400,22 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
 
     showQuestion() {
         const q = this.questions[this.currentIndex];
-        this.contentImage.setTexture(q.content).setVisible(true);
+        this.contentImage.setTexture(q.question).setVisible(true)
+            .setInteractive({ useHandCursor: true });
+        this.contentImage.once('pointerdown', () => {
+            this.contentImage.destroy();
+            this.showOptions();
+        });
+    }
+
+    showOptions() {
+        const q = this.questions[this.currentIndex];
+        this.questionBackground.setTexture(q.questionBackground).setVisible(true);
         if (this.optionButtons) {
             this.optionButtons.forEach(btn => btn.destroy());
         }
         this.optionButtons = [];
+        this.confirmBtn.setVisible(true);
 
         const options = q.options || q.option; // Support both 'options' and 'option'
         options.forEach((optKey, index) => {
@@ -438,51 +454,31 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
                 this.scene.updateRoundUI(true);
                 this.scene.roundIndex++;
             }
-            // Support both addOn (old) and nextDialog/characterDialog (new) formats
-            const dialogKey = q.addOn || q.nextDialog;
-            if (dialogKey) {
-                this.showAddOn(dialogKey, q.characterDialog);
-            } else {
-                this.nextQuestion();
-            }
+            this.showAddOn(q.description);
+
+
         } else {
             console.log("答錯了 , correct : " + q.answer);
             // Hide the question panel to show bubbles properly
             this.setVisible(false);
-            // Call handleLose which shows fail label, tryagain bubble, and fail panel
             this.scene.handleLose();
         }
     }
 
-    showAddOn(dialogKey, characterDialogKey) {
+    showAddOn(descriptionKey) {
         this.optionButtons.forEach(btn => btn.setVisible(false));
         this.contentImage.setVisible(false);
         this.confirmBtn.setVisible(false);
 
-        const dialogImg = this.scene.add.image(0, 350, dialogKey).setInteractive({ useHandCursor: true });
-        this.add(dialogImg);
+        const descImg = this.scene.add.image(0, 350, descriptionKey).setInteractive({ useHandCursor: true });
+        this.add(descImg);
 
-        dialogImg.once('pointerdown', () => {
-            dialogImg.destroy();
-
-            // If there's a character dialogue, show it next
-            if (characterDialogKey) {
-                this.showCharacterDialog(characterDialogKey);
-            } else {
-                this.nextQuestion();
-            }
-        });
-    }
-
-    showCharacterDialog(characterDialogKey) {
-        const charImg = this.scene.add.image(0, 350, characterDialogKey).setInteractive({ useHandCursor: true });
-        this.add(charImg);
-
-        charImg.once('pointerdown', () => {
-            charImg.destroy();
+        descImg.once('pointerdown', () => {
+            descImg.destroy();
             this.nextQuestion();
         });
     }
+
 
     nextQuestion() {
         this.currentIndex++;
