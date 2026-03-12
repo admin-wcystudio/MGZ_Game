@@ -14,7 +14,7 @@ export class GameScene_7 extends BaseGameScene {
         const path = 'assets/images/Game_7/';
 
         this.load.image('game7_npc_box_win', `${path}game7_npc_box4.png`);
-        this.load.image('game7_npc_box_tryagain', `${path}game7_npc_box.png`);
+        this.load.image('game7_npc_box_tryagain', `${path}game7_npc_box5.png`);
 
         this.load.video('game_success', `${path}game7_success_bg.mp4`);
         this.load.video('game_fail', `${path}game7_fail_bg.mp4`);
@@ -47,7 +47,7 @@ export class GameScene_7 extends BaseGameScene {
             roundPerSeconds: 60,
             isAllowRoundFail: false,
             isContinuousTimer: true,
-            sceneIndex: 5
+            sceneIndex: 7
         });
     }
 
@@ -77,6 +77,7 @@ export class GameScene_7 extends BaseGameScene {
             {
                 question: 'game7_q3',
                 questionBackground: 'game7_q3_bg',
+                description: 'game7_q3_description',
                 options: ['game7_q3_a_button', 'game7_q3_b_button', 'game7_q3_c_button', 'game7_q3_d_button'],
                 answer: 1,
 

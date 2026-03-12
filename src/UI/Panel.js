@@ -380,12 +380,12 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
         // Create image for displaying question content
         this.contentImage = scene.add.image(0, 50, '').setDepth(200).setVisible(false);
 
-        this.questionBackground = scene.add.image(0, 50, '').setDepth(199).setVisible(false);
+        this.questionBackground = scene.add.image(0, 20, '').setDepth(199).setVisible(false);
 
         this.add([this.contentImage, this.questionBackground]);
 
         // 2. 確認按鈕 (初始隱藏)
-        this.confirmBtn = new CustomButton(scene, 0, 380,
+        this.confirmBtn = new CustomButton(scene, 0, 360,
             'game7_confirm_button', 'game7_confirm_button_select', () => {
                 this.checkAnswer();
             });
@@ -403,7 +403,7 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
         this.contentImage.setTexture(q.question).setVisible(true)
             .setInteractive({ useHandCursor: true });
         this.contentImage.once('pointerdown', () => {
-            this.contentImage.destroy();
+            this.contentImage.setVisible(false);
             this.showOptions();
         });
     }
@@ -419,7 +419,7 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
 
         const options = q.options || q.option; // Support both 'options' and 'option'
         options.forEach((optKey, index) => {
-            const y = -100 + index * 120;
+            const y = -110 + index * 120;
             const btn = new CustomButton(this.scene, 0, y, optKey, `${optKey}_select`,
                 () => {
                     this.selectedAnswer(btn, index);
@@ -470,7 +470,8 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
         this.contentImage.setVisible(false);
         this.confirmBtn.setVisible(false);
 
-        const descImg = this.scene.add.image(0, 350, descriptionKey).setInteractive({ useHandCursor: true });
+        const descImg = this.scene.add.image(0, 0, descriptionKey)
+            .setInteractive({ useHandCursor: true }).setDepth(300);
         this.add(descImg);
 
         descImg.once('pointerdown', () => {
@@ -490,6 +491,7 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
             this.confirmBtn.setVisible(true);
             this.selectedAnswerIndex = -1;
             this.showQuestion();
+            this.showOptions();
         } else {
             console.log('All questions answered correctly!');
             this.scene.onRoundWin();
