@@ -28,6 +28,8 @@ export class GameScene_3 extends BaseGameScene {
         this.load.image('game3_npc_box_tryagain', `${path}game3_npc_box3.png`);
         this.load.image('game3_preview', `${path}game3_success_preview.png`);
 
+        this.load.image('game3_object_description', `${path}game3_object_description.png`);
+
     }
 
     create() {
@@ -65,20 +67,32 @@ export class GameScene_3 extends BaseGameScene {
             { x: centerX + 700, y: centerY + 280 }
         ];
 
-        // Card pairs data (12 pairs = 24 cards)
+        // Card pairs data (12 pairs = 24 cards) - fixed spawn order
         this.cardTypes = [
-            'game3_card1_img', 'game3_card1_text',
-            'game3_card2_img', 'game3_card2_text',
-            'game3_card3_img', 'game3_card3_text',
-            'game3_card4_img', 'game3_card4_text',
-            'game3_card5_img', 'game3_card5_text',
-            'game3_card6_img', 'game3_card6_text',
-            'game3_card7_img', 'game3_card7_text',
-            'game3_card8_img', 'game3_card8_text',
-            'game3_card9_img', 'game3_card9_text',
-            'game3_card10_img', 'game3_card10_text',
-            'game3_card11_img', 'game3_card11_text',
-            'game3_card12_img', 'game3_card12_text'
+            'game3_card1_img',
+            'game3_card2_text',
+            'game3_card6_text',
+            'game3_card5_img',
+            'game3_card11_img',
+            'game3_card2_img',
+            'game3_card11_text',
+            'game3_card8_text',
+            'game3_card3_text',
+            'game3_card7_img',
+            'game3_card9_img',
+            'game3_card5_text',
+            'game3_card9_text',
+            'game3_card8_img',
+            'game3_card4_img',
+            'game3_card12_text',
+            'game3_card6_img',
+            'game3_card4_text',
+            'game3_card3_img',
+            'game3_card10_text',
+            'game3_card12_img',
+            'game3_card7_text',
+            'game3_card1_text',
+            'game3_card10_img'
         ];
 
         this.cards = [];
@@ -96,15 +110,12 @@ export class GameScene_3 extends BaseGameScene {
     }
 
     setupGameObjects() {
-        // Shuffle card types
-        const shuffledTypes = Phaser.Utils.Array.Shuffle([...this.cardTypes]);
-
-        // Shuffle positions
-        const shuffledPositions = Phaser.Utils.Array.Shuffle([...this.spawnCardPositions]);
+        const shuffledTypes = [...this.cardTypes];
+        const shuffledPositions = [...this.spawnCardPositions];
 
         console.log('Creating cards at positions:', shuffledPositions);
 
-        // Create cards at random positions
+        // Create cards at fixed positions in specified order
         shuffledTypes.forEach((cardType, index) => {
             const pos = shuffledPositions[index];
 
@@ -177,8 +188,8 @@ export class GameScene_3 extends BaseGameScene {
         // Optional: Add flip animation
         this.tweens.add({
             targets: card,
-            scaleX: faceUp ? 0.8 : 1,
-            scaleY: faceUp ? 0.8 : 1,
+            scaleX: faceUp ? 0.7 : 1,
+            scaleY: faceUp ? 0.7 : 1,
             duration: 150,
             ease: 'Linear'
         });
@@ -284,7 +295,7 @@ export class GameScene_3 extends BaseGameScene {
         }]);
         objectPanel.setDepth(1000);
         objectPanel.show();
-        objectPanel.setCloseCallBack(() => GameManager.backToMainStreet(this));
+        //objectPanel.setCloseCallBack(() => GameManager.backToMainStreet(this));
     }
 
 }

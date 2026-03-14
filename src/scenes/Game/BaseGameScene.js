@@ -410,7 +410,7 @@ export default class BaseGameScene extends Phaser.Scene {
             popupPanel.destroy();
             this.restartGame(); // 重新開始整個遊戲
         }, () => {
-            GameManager.backToMainStreet(this);
+            // GameManager.backToMainStreet(this);
         });
         popupPanel.setDepth(1000);
     }
