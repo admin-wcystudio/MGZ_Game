@@ -15,16 +15,27 @@ export class GameScene_2 extends BaseGameScene {
         this.centerX = this.width / 2;
         this.centerY = this.height / 2;
 
-        this.load.image('game2_npc_box_intro', `${path}game2_npc_box3.png`);
+
+        this.load.image('game2_npc_box_mainstreet_fail_01', `${path}game2_npc_box1.png`);
+        this.load.image('game2_npc_box_mainstreet_fail_02', `${path}game2_npc_box2.png`);
+        this.load.image('game2_npc_box_mainstreet', `${path}game2_npc_box3.png`);
+
         this.load.image('game2_npc_box_win', `${path}game2_npc_box4.png`);
         this.load.image('game2_npc_box_tryagain', `${path}game2_npc_box5.png`);
-        this.load.image('pen', `${path}game2_mazeobject1.png`);
-        this.load.image('coin', `${path}game2_mazeobject2.png`);
-
         this.load.image('up_btn', `${path}game2_up_button.png`);
         this.load.image('up_btn_click', `${path}game2_up_button_click.png`);
         this.load.image('down_btn', `${path}game2_down_button.png`);
         this.load.image('down_btn_click', `${path}game2_down_button_click.png`);
+        this.load.image('left_btn', `${path}game2_left_button.png`);
+        this.load.image('left_btn_click', `${path}game2_left_button_click.png`);
+        this.load.image('right_btn', `${path}game2_right_button.png`);
+        this.load.image('right_btn_click', `${path}game2_right_button_click.png`);
+
+
+        for (let i = 1; i <= 3; i++) {
+            this.load.image(`game2_fail_object${i}`, `${path}game2_fail_object${i}.png`);
+            this.load.image(`game2_success_object${i}`, `${path}game2_success_object${i}.png`);
+        }
 
         this.gender = 'M';
         if (localStorage.getItem('player')) {
@@ -83,25 +94,22 @@ export class GameScene_2 extends BaseGameScene {
         this.createAnimations();
 
         // Movement settings
-        this.moveStep = 60;  // Pixels per move
+        this.moveStep = 58;  // Pixels per move
         this.isMoving = false;
 
         // Player start position
-        this.playerStartX = this.centerX + 50;
-        this.playerStartY = 800;
+        this.playerStartX = this.centerX;
+        this.playerStartY = 750;
 
-        // Item tracking
-        this.coins = [];
-        this.pens = [];
-        this.collectedPens = 0;
-
-        this.initGame('game2_bg', 'game2_description', false, false, {
+        this.initGame('game2_bg', 'game2_description', true, false, {
             targetRounds: 3,
             roundPerSeconds: 60,
-            isAllowRoundFail: true,
+            isAllowRoundFail: false,
             isContinuousTimer: true,
             sceneIndex: 2
         });
+
+        //  this.gameUI.descriptionPanel.setVisible(false);
 
         // Direction buttons
         this.leftBtn = new CustomButton(this, 1500, 950, 'left_btn', 'left_btn_click', () => {
@@ -133,18 +141,43 @@ export class GameScene_2 extends BaseGameScene {
         this.player = this.add.sprite(this.playerStartX, this.playerStartY, `${this.genderKey}_${idleKey}`)
             .setOrigin(0.5, 0.5).setDepth(2).setScale(2);
 
+        this.failObjects = [];
+        this.successObjects = [];
+        this.maxFailObjects = 9;
+        this.maxSuccessObjects = 9;
+        this.collectedSuccessObjects = 0;
+        this.collectedFailObjects = 0;
+        this.placeFailObjects();
+        this.placeSuccessObjects();
 
-
-        this.maxCoins = 5;
-        this.maxPens = 6;
-        this.placeCoins();
-        this.placePens();
         this.createWallColliders();
 
         // Debug: visualize player collision box (set to false to hide)
-        this.debugCollider = true;
+        this.debugCollider = false;
         this.debugGraphics = this.add.graphics().setDepth(999);
 
+    }
+
+    update(time, delta) {
+
+        // if (this.debugGraphics && this.wallRects) {
+        //     this.debugGraphics.clear();
+        //     this.debugGraphics.fillStyle(0x00ff00, 0.25);
+        //     for (const wall of this.wallRects) {
+        //         this.debugGraphics.fillRect(wall.x, wall.y, wall.width, wall.height);
+        //     }
+        //     // Keep blocked wall red for 500ms
+        //     if (this.lastBlockedWall && (time - this.lastBlockedTime) < 500) {
+        //         this.debugGraphics.fillStyle(0xff0000, 0.6);
+        //         this.debugGraphics.fillRect(this.lastBlockedWall.x, this.lastBlockedWall.y, this.lastBlockedWall.width, this.lastBlockedWall.height);
+        //     }
+        // }
+
+        if (!this.isGameActive) return;
+        super.update(time, delta);
+
+        this.checkFailCollision();
+        this.checkSuccessCollection();
     }
 
     createWallColliders() {
@@ -152,34 +185,41 @@ export class GameScene_2 extends BaseGameScene {
 
         const debugVisible = false;
         // Outer boundary walls
-        this.createWall(this.centerX, 160, 2300, 210, debugVisible, true);
-        this.createWall(this.centerX + 480, 250, 800, 150, debugVisible, true);
-        this.createWall(this.centerX, this.centerY + 450, 2300, 230, debugVisible, true);
+        this.createWall(this.centerX, 180, 2300, 210, debugVisible, true);
+        this.createWall(this.centerX + 460, 250, 800, 170, debugVisible, true);
+        this.createWall(this.centerX - 260, this.centerY + 455, 1000, 240, debugVisible, true);
         this.createWall(this.centerX + 550, this.centerY + 430, 500, 210, debugVisible, true);
 
         // Interior walls
-        this.createWall(800, 450, 290, 190, debugVisible, true);
-        this.createWall(this.centerX - 520, this.centerY + 130, 280, 250, debugVisible, true);
-        this.createWall(this.centerX - 430, this.centerY + 90, 400, 140, debugVisible, true);
-        this.createWall(this.centerX - 150, this.centerY + 330, 320, 150, debugVisible, true);
+        this.createWall(800 - 5, 460, 260, 190, debugVisible, true);
+        this.createWall(this.centerX - 520, this.centerY + 130, 250, 240, debugVisible, true);
+        this.createWall(this.centerX - 430, this.centerY + 75, 430, 160, debugVisible, true);
+
+        //start left
+        this.createWall(this.centerX - 170, this.centerY + 330, 250, 150, debugVisible, true);
+
         this.createWall(1000, 680, 320, 60, debugVisible, true);
-        this.createWall(1050, 500, 750, 100, debugVisible, true);
+        this.createWall(1050, 500, 750, 140, debugVisible, true);
+
         // Top-left / right grass/tree area
-        this.createWall(100, 350, 250, 180, debugVisible, true);
+        this.createWall(100, 365, 250, 180, debugVisible, true);
+
         // Left side vertical grass path
         this.createWall(0, 520, 150, 980, debugVisible, true);
+        this.createWall(195, 800, 60, 500, debugVisible, true);
+
         // Bottom-left grass
-        this.createWall(200, 800, 50, 500, debugVisible, true);
         this.createWall(120, 850, 100, 100, debugVisible, true);
         this.createWall(400, 320, 150, 100, debugVisible, true);
-        this.createWall(450, 420, 280, 100, debugVisible, true);
+        this.createWall(450, 420, 260, 100, debugVisible, true);
 
-        this.createWall(1120, 850, 120, 120, debugVisible, true);
+        this.createWall(1090, 850, 160, 120, debugVisible, true);
         this.createWall(1820, 780, 150, 120, debugVisible, true);
         this.createWall(1870, 350, 100, 980, debugVisible, true);
         this.createWall(900, 560, 140, 180, debugVisible, true);
-        this.createWall(1350, 600, 150, 330, debugVisible, true);
-        this.createWall(1620, 690, 240, 350, debugVisible, true);
+
+        this.createWall(1340, 600, 170, 330, debugVisible, true);
+        this.createWall(1620, 690, 210, 350, debugVisible, true);
         this.createWall(1650, 320, 280, 200, debugVisible, true);
 
     }
@@ -232,8 +272,8 @@ export class GameScene_2 extends BaseGameScene {
         }
 
         // Manual intersection check against walls using points instead of Arcade physics
-        if (this.wouldCollideWithWall(targetX - 20, targetY - 30)) {
-            console.log('[GameScene_2] Blocked by wall!');
+        if (this.wouldCollideWithWall(targetX, targetY)) {
+            console.log('[GameScene_4] Blocked by wall!');
             return;
         }
 
@@ -253,102 +293,100 @@ export class GameScene_2 extends BaseGameScene {
                 this.isMoving = false;
                 this.player.anims.play(stopAnimKey, true);
 
-                this.checkCoinCollision();
-                this.checkPenCollection();
             }
         });
     }
 
     wouldCollideWithWall(x, y) {
-        const hitBBoxSize = 20;
-        // Offset down to the character's feet (sprite is 105px * scale 2 = 210px tall, feet ~90px below center)
-        const feetY = y + 90;
-        const playerRect = new Phaser.Geom.Rectangle(x - hitBBoxSize / 2, feetY - hitBBoxSize / 2, hitBBoxSize, hitBBoxSize);
+        const bw = 30, bh = 20;
+        // Feet area: centered horizontally on player, 60px below player origin
+        const feetY = y + 70;
+        const playerRect = new Phaser.Geom.Rectangle(x - bw / 2, feetY - bh / 2, bw, bh);
 
-        let colliding = false;
         for (const wall of this.wallRects) {
             const wallRect = new Phaser.Geom.Rectangle(wall.x, wall.y, wall.width, wall.height);
             if (Phaser.Geom.Intersects.RectangleToRectangle(playerRect, wallRect)) {
-                colliding = true;
-                break;
-            }
+                console.log(`[Wall Block] player feet at (${x.toFixed(0)}, ${feetY.toFixed(0)}) hit wall: x=${wall.x.toFixed(0)} y=${wall.y.toFixed(0)} w=${wall.width} h=${wall.height}`);                // Flash the blocking wall red
+                this.lastBlockedWall = wall;
+                this.lastBlockedTime = this.time.now;
+
+                return true;
+            } else { }
         }
 
-        // if (this.debugCollider && this.debugGraphics) {
-        //     this.debugGraphics.clear();
-        //     // Red when colliding, cyan when free
-        //     this.debugGraphics.lineStyle(2, colliding ? 0xff0000 : 0x00ffff, 1);
-        //     this.debugGraphics.strokeRect(playerRect.x, playerRect.y, playerRect.width, playerRect.height);
-        //     // Show coin collection radius in yellow
-        //     this.debugGraphics.lineStyle(1, 0xffff00, 0.6);
-        //     this.debugGraphics.strokeCircle(x, y, 80);
-        // }
-
-        return colliding;
+        return false;
     }
 
-    /** Check collision with coins using distance */
-    checkCoinCollision() {
-        const hitRadius = 80;
-        for (const coin of this.coins) {
-            if (!coin.visible) continue;
-            const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, coin.x, coin.y);
+    /** Check collision with fail objects using distance */
+    checkFailCollision() {
+        const hitRadius = 50;
+        for (const failObj of this.failObjects) {
+            if (!failObj.visible) continue;
+            const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, failObj.x, failObj.y);
             if (dist < hitRadius) {
-                coin.setVisible(false);
-                this.lives--;
-                console.log(`[GameScene_2] Coin hit! Lives: ${this.lives}`);
+                failObj.setVisible(false);
+                this.collectedFailObjects++;
+                console.log(`[GameScene_4] Fail object hit! Fails: ${this.collectedFailObjects}`);
+
+                // Update the round UI indicator based on total objects collected
+                this.roundIndex = this.collectedSuccessObjects + this.collectedFailObjects - 1;
+
                 this.handleLose();
                 return;
             }
         }
     }
 
-    /** Check collection of pens using distance */
-    checkPenCollection() {
-        const pickupRadius = 80;
-        for (const pen of this.pens) {
-            if (!pen.visible) continue;
-            const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, pen.x, pen.y);
+    /** Check collection of success objects using distance */
+    checkSuccessCollection() {
+        const pickupRadius = 50;
+        for (const successObj of this.successObjects) {
+            if (!successObj.visible) continue;
+            const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, successObj.x, successObj.y);
             if (dist < pickupRadius) {
-                pen.setVisible(false);
-                this.collectedPens++;
-                console.log(`[GameScene_2] Pen collected! (${this.collectedPens}/3)`);
-                if (this.collectedPens >= 3) {
-                    console.log('[GameScene_2] 3 pens collected! You win!');
+                successObj.setVisible(false);
+                this.collectedSuccessObjects++;
+                console.log(`[GameScene_4] Success object collected! (${this.collectedSuccessObjects}/3)`);
+
+                // Update the round UI indicator based on total objects collected
+                this.roundIndex = this.collectedSuccessObjects + this.collectedFailObjects - 1;
+                this.updateRoundUI(true);
+
+                if (this.collectedSuccessObjects >= this.targetRounds) {
                     this.onRoundWin();
                 }
+
                 return;
             }
         }
     }
 
-    placeCoins() {
+    placeFailObjects() {
 
-        const coinPositions = [
+        const failObjectPositions = [
             { x: 250, y: 330 },
             { x: 100, y: 500 },
-            { x: 600, y: 350 },
             { x: 780, y: 600 },
             { x: 850, y: 280 },
-            { x: 1200, y: 380 },
-            { x: 1200, y: 580 },
+            { x: 1200, y: 560 },
             { x: 1450, y: 450 },
             { x: 1780, y: 650 },
         ];
 
-        Phaser.Utils.Array.Shuffle(coinPositions);
+        Phaser.Utils.Array.Shuffle(failObjectPositions);
 
-        coinPositions.forEach(pos => {
-            if (this.coins.length == this.maxCoins) return;
-            const coinSprite = this.add.image(pos.x, pos.y, 'coin').setDepth(2);
-            this.coins.push(coinSprite);
+        failObjectPositions.forEach(pos => {
+            if (this.failObjects.length == this.maxFailObjects) return;
+            const randomFail = `game2_fail_object${Phaser.Math.Between(1, 3)}`;
+            const failSprite = this.add.image(pos.x, pos.y, randomFail).setDepth(2);
+            this.failObjects.push(failSprite);
         });
-        console.log(`[GameScene_2] Placed ${this.coins.length} coins`);
+        console.log(`[GameScene_4] Placed ${this.failObjects.length} fail objects`);
     }
 
-    placePens() {
+    placeSuccessObjects() {
 
-        const penPositions = [
+        const successObjectPositions = [
             { x: 100, y: 700 },
             { x: 280, y: 420 },   // Upper-left corridor
             { x: 600, y: 500 },   // Center path
@@ -360,14 +398,15 @@ export class GameScene_2 extends BaseGameScene {
             { x: 1780, y: 450 },// Far right upper
         ];
 
-        Phaser.Utils.Array.Shuffle(penPositions);
+        Phaser.Utils.Array.Shuffle(successObjectPositions);
 
-        penPositions.forEach(pos => {
-            if (this.pens.length == this.maxPens) return;
-            const penSprite = this.add.image(pos.x, pos.y, 'pen').setDepth(2);
-            this.pens.push(penSprite);
+        successObjectPositions.forEach(pos => {
+            if (this.successObjects.length == this.maxSuccessObjects) return;
+            const randomSuccess = `game2_success_object${Phaser.Math.Between(1, 3)}`;
+            const successSprite = this.add.image(pos.x, pos.y, randomSuccess).setDepth(2);
+            this.successObjects.push(successSprite);
         });
-        console.log(`[GameScene_2] Placed ${this.pens.length} pens`);
+        console.log(`[GameScene_4] Placed ${this.successObjects.length} success objects`);
     }
 
     enableGameInteraction(enabled) {
@@ -402,8 +441,17 @@ export class GameScene_2 extends BaseGameScene {
 
     resetForNewRound() {
         this.isMoving = false;
-        this.lives = 3;
-        this.collectedPens = 0;
+        this.collectedFailObjects = 0;
+        this.collectedSuccessObjects = 0;
+        this.roundIndex = 0; // Reset index to 0 since we reset the board
+
+        // Reset round UI icons back to initial state
+        if (this.gameUI?.roundStates) {
+            this.gameUI.roundStates.forEach(state => {
+                state.content.setTexture('game_gamechance');
+                state.isSuccess = null;
+            });
+        }
 
         if (this.player) {
             this.player.x = this.playerStartX;
@@ -412,20 +460,32 @@ export class GameScene_2 extends BaseGameScene {
         }
 
         // Destroy and re-place items
-        if (this.coins) {
-            this.coins.forEach(c => c.destroy());
-            this.coins = [];
+        if (this.failObjects) {
+            this.failObjects.forEach(c => c.destroy());
+            this.failObjects = [];
         }
-        if (this.pens) {
-            this.pens.forEach(p => p.destroy());
-            this.pens = [];
+        if (this.successObjects) {
+            this.successObjects.forEach(p => p.destroy());
+            this.successObjects = [];
         }
-        this.placeCoins();
-        this.placePens();
+        this.placeFailObjects();
+        this.placeSuccessObjects();
 
     }
 
-    showWin() {
+    onRoundWin() {
+        if (!this.isGameActive || this.gameState === 'gameWin') return;
+
+        this.gameState = 'gameWin';
+        this.gameTimer.stop();
+        this._calculateTiming(true);
+        this.enableGameInteraction(false);
+        this.showFeedbackLabel(true);
+        this.showBubble('win');
+    }
+
+    onWinBubbleClose() {
+        GameManager.saveGameResult(4, true, this.totalUsedSeconds);
         this.showObjectPanel();
     }
 
@@ -447,7 +507,7 @@ export class GameScene_2 extends BaseGameScene {
         // Boy animations
         this.anims.create({
             key: 'boy_backstop_anim',
-            frames: this.anims.generateFrameNumbers('boy_backstop', { start: 0, end: 66 }),
+            frames: this.anims.generateFrameNumbers('boy_backstop', { start: 0, end: 47 }),
             frameRate: 30,
             repeat: -1
         });
@@ -459,19 +519,19 @@ export class GameScene_2 extends BaseGameScene {
         });
         this.anims.create({
             key: 'boy_frontstop_anim',
-            frames: this.anims.generateFrameNumbers('boy_frontstop', { start: 0, end: 66 }),
+            frames: this.anims.generateFrameNumbers('boy_frontstop', { start: 0, end: 47 }),
             frameRate: 30,
             repeat: -1
         });
         this.anims.create({
             key: 'boy_frontwalking_anim',
-            frames: this.anims.generateFrameNumbers('boy_frontwalking', { start: 0, end: 66 }),
+            frames: this.anims.generateFrameNumbers('boy_frontwalking', { start: 0, end: 47 }),
             frameRate: 30,
             repeat: -1
         });
         this.anims.create({
             key: 'boy_leftstop_anim',
-            frames: this.anims.generateFrameNumbers('boy_leftstop', { start: 0, end: 66 }),
+            frames: this.anims.generateFrameNumbers('boy_leftstop', { start: 0, end: 47 }),
             frameRate: 30,
             repeat: -1
         });
@@ -483,7 +543,7 @@ export class GameScene_2 extends BaseGameScene {
         });
         this.anims.create({
             key: 'boy_rightstop_anim',
-            frames: this.anims.generateFrameNumbers('boy_rightstop', { start: 0, end: 66 }),
+            frames: this.anims.generateFrameNumbers('boy_rightstop', { start: 0, end: 47 }),
             frameRate: 30,
             repeat: -1
         });
@@ -534,7 +594,7 @@ export class GameScene_2 extends BaseGameScene {
         this.anims.create({
             key: 'girl_rightwalking_anim',
             frames: this.anims.generateFrameNumbers('girl_rightwalking', { start: 0, end: 66 }),
-            frameRate: 30,
+            frameRate: 24,
             repeat: -1
         });
     }
