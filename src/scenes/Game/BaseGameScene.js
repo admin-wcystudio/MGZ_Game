@@ -191,27 +191,7 @@ export default class BaseGameScene extends Phaser.Scene {
         } else if (type === 'tryagain' || type === 'tryagain2') {
             this.currentBubbleImg.once('pointerdown', () => {
                 closeBubble();
-
-                // Logic: 
-                // 1. If isAllowRoundFail (consume rounds as chances):
-                //    - If we have rounds left, go nextRound().
-                //    - Else, Fail Panel.
-                // 2. Else (original sequential logic, or separate failChances logic):
-                //    - Default to Fail Panel immediately for now unless failChances used.
-
-                if (this.isAllowRoundFail) {
-                    if (this.roundIndex + 1 < this.targetRounds) {
-                        this.nextRound();
-                    } else {
-                        this.showLose(() => {
-                            this.showFailPanel();
-                        });
-                    }
-                } else {
-                    this.showLose(() => {
-                        this.showFailPanel();
-                    });
-                }
+                this.onLoseBubbleClose();
             });
 
         } else if (type === 'lock') {
@@ -313,6 +293,25 @@ export default class BaseGameScene extends Phaser.Scene {
         } else {
             this.totalUsedSeconds += used;
             this.gameTimer.reset(this.roundPerSeconds);
+        }
+    }
+
+    /**
+     * Called when lose/tryagain bubble is closed - continues to next round or shows fail panel
+     */
+    onLoseBubbleClose() {
+        if (this.isAllowRoundFail) {
+            if (this.roundIndex + 1 < this.targetRounds) {
+                this.nextRound();
+            } else {
+                this.showLose(() => {
+                    this.showFailPanel();
+                });
+            }
+        } else {
+            this.showLose(() => {
+                this.showFailPanel();
+            });
         }
     }
 

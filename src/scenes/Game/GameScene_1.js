@@ -15,21 +15,25 @@ export class GameScene_1 extends BaseGameScene {
         this.centerX = this.width / 2;
         this.centerY = this.height / 2;
 
-        this.load.image('game1_npc_box_intro', `${path}game1_npc_box3.png`);
+        this.load.image('game1_npc_box_mainstreet', `${path}game1_npc_box1.png`);
+        this.load.image('game1_npc_box_win', `${path}game1_npc_box2.png`);
+        this.load.image('game1_npc_box_win_01', `${path}game1_npc_box3.png`);
+        this.load.image('game1_npc_box_tryagain', `${path}game1_npc_box4.png`);
+        this.load.image('game1_npc_box_tryagain_01', `${path}game1_npc_box5.png`);
 
-        this.load.image('game1_npc_box_boy_win', `${path}game1_npc_box4.png`);
-        this.load.image('game1_npc_box_girl_win', `${path}game1_npc_girl_box4.png`);
-        this.load.image('game1_npc_box_win', `${path}game1_npc_box5.png`);
-        this.load.image('game1_npc_box_boy_win3', `${path}game1_npc_box6.png`);
-        this.load.image('game1_npc_box_girl_win3', `${path}game1_npc_girl_box6.png`);
+        //game 1 asset
+        for (let i = 1; i <= 3; i++) {
+            this.load.image(`game1_failobject${i}`, `assets/images/Game_1/game1_failobject${i}.png`);
+        }
+        for (let i = 1; i <= 3; i++) {
+            this.load.image(`game1_successobject${i}`, `assets/images/Game_1/game1_successobject${i}.png`);
+        }
 
-        this.load.image('game1_npc_box_tryagain', `${path}game1_npc_box7.png`);
 
-        this.gender = 'F';
+        this.gender = 'M';
         if (localStorage.getItem('player')) {
             this.gender = JSON.parse(localStorage.getItem('player')).gender;
         }
-
         if (this.gender === 'M') {
             this.load.spritesheet('boy_fail', path +
                 'game1_boy_fail.png', { frameWidth: 340, frameHeight: 500 });
@@ -66,11 +70,19 @@ export class GameScene_1 extends BaseGameScene {
     create() {
         this.createAnimations();
 
-        this.initGame('game1_bg', 'game1_description', false, false, {
+        // Movement settings
+        this.moveStep = 60;  // Pixels per move
+        this.isMoving = false;
+
+        // Player start position
+        this.playerStartX = this.centerX + 50;
+        this.playerStartY = 800;
+
+        this.initGame('game1_bg', 'game1_description', true, false, {
             targetRounds: 3,
             roundPerSeconds: 60,
             isAllowRoundFail: false,
-            isContinuousTimer: true,
+            isContinuousTimer: false,
             sceneIndex: 1
         });
 
@@ -127,23 +139,23 @@ export class GameScene_1 extends BaseGameScene {
 
         this.successCount = 0;
 
+
         this.failItemKeys = [
-            'game1_failobject1',
-            'game1_failobject2',
-            'game1_failobject3',
-            'game1_failobject4'
+            'game1_successobject1',
+            'game1_successobject2',
+            'game1_successobject3'
+
         ];
 
         this.fallingItemsGroup = this.physics.add.group();
         this.fallingItems = [];
+
         this.spawnTimer = 0;
 
-        // Setup overlap between basket and falling items group
         this.physics.add.overlap(this.playerBasket, this.fallingItemsGroup, (basket, item) => {
             this.handleItemCollection(item);
         }, null, this);
     }
-
     moveDirection(direction) {
         const speed = 100;
         this.player.anims.play(`${this.genderKey}_${direction}_anim`, true);
@@ -155,7 +167,6 @@ export class GameScene_1 extends BaseGameScene {
             this.player.anims.play(`${this.genderKey}_middle_anim`, true);
         });
     }
-
     enableGameInteraction(enabled) {
         this.canSpawn = enabled;
         this.leftBtn.setVisible(enabled);
@@ -218,9 +229,8 @@ export class GameScene_1 extends BaseGameScene {
         // Reset success counter
         this.successCount = 0;
 
-        console.log('[GameScene_1] Reset for new round');
+        console.log('[GameScene_2] Reset for new round');
     }
-
 
     update() {
 
@@ -274,8 +284,6 @@ export class GameScene_1 extends BaseGameScene {
         }
     }
 
-
-
     handleLose() {
         if (this.gameState === 'gameLose' || this.gameState === 'gameWin') return;
 
@@ -297,24 +305,37 @@ export class GameScene_1 extends BaseGameScene {
         }
     }
 
-    showWin() {
+    onWinBubbleClose() {
+        const centerX = this.cameras.main.width / 2;
+        const centerY = this.cameras.main.height * 0.8;
+        this.win_01 = this.add.image(centerX, centerY, 'game1_npc_box_win_01')
+            .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
 
-        // Second: Show generic win2 bubble
-        this.bubbleImage2 = this.add.image(this.centerX, this.cameras.main.height * 0.8, 'game1_npc_box_win')
-            .setDepth(555).setInteractive({ useHandCursor: true })
-            .on('pointerdown', () => {
-                this.bubbleImage2.destroy();
-
-                // Third: Show gender-specific win3 bubble
-                this.bubbleImage3 = this.add.image(this.centerX, this.cameras.main.height * 0.8, `game1_npc_box_${this.genderKey}_win3`)
-                    .setDepth(555).setInteractive({ useHandCursor: true })
-                    .on('pointerdown', () => {
-                        this.bubbleImage3.destroy();
-                        this.showObjectPanel();
-                    });
-            });
+        this.win_01.on('pointerdown', () => {
+            this.win_01.destroy();
+            this.win_01 = null;
+            super.onWinBubbleClose();
+        });
 
     }
+
+    showWin() {
+        this.showObjectPanel();
+    }
+
+    onLoseBubbleClose() {
+        const centerX = this.cameras.main.width / 2;
+        const centerY = this.cameras.main.height * 0.8;
+        this.lose_01 = this.add.image(centerX, centerY, 'game1_npc_box_tryagain_01')
+            .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+
+        this.lose_01.on('pointerdown', () => {
+            this.lose_01.destroy();
+            this.lose_01 = null;
+            super.onLoseBubbleClose();
+        });
+    }
+
 
     showObjectPanel() {
         const objectPanel = new CustomPanel(this, 960, 600, [{
@@ -344,7 +365,12 @@ export class GameScene_1 extends BaseGameScene {
     }
 
     spawnSuccessItem() {
-        const key = 'game1_successobject';
+        const successkeys = [
+            'game1_failobject1',
+            'game1_failobject2',
+            'game1_failobject3'
+        ];
+        const key = Phaser.Utils.Array.GetRandom(successkeys);
         // Spawn at random x, always y = minY
         const x = Phaser.Math.Between(this.minX, this.maxX);
 
