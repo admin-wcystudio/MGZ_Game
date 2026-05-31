@@ -17,28 +17,31 @@ export class GameScene_6 extends BaseGameScene {
         this.load.image('confirm_button', `${path}game6_confirm_button.png`);
         this.load.image('confirm_button_select', `${path}game6_confirm_button_select.png`);
 
+        this.load.image('game6_npc_box_mainstreet_fail', `${path}game6_npc_box1.png`);
+        this.load.image('game6_npc_box_mainstreet_fail_01', `${path}game6_npc_box2.png`);
+
+        this.load.image('game6_npc_box_mainstreet', `${path}game6_npc_box3.png`);
+        this.load.image('game6_npc_box_mainstreet_01', `${path}game6_npc_box4.png`);
+
+        this.load.image('game6_npc_box_win', `${path}game6_npc_box5.png`);
+        this.load.image('game6_npc_box_win_01', `${path}game6_npc_box6.png`);
+
         if (this.genderKey === 'boy') {
-            this.load.image('game6_npc_box_intro', `${path}game6_npc_boy_box3.png`);
+            this.load.image('game6_npc_box_win_02', `${path}game6_npc_box7_boy.png`);
+            this.load.image('game6_npc_box_win_03', `${path}game6_npc_box8_boy.png`);
         } else {
-            this.load.image('game6_npc_box_intro', `${path}game6_npc_girl_box3.png`);
+            this.load.image('game6_npc_box_win_02', `${path}game6_npc_box7_girl.png`);
+            this.load.image('game6_npc_box_win_03', `${path}game6_npc_box8_girl.png`);
         }
 
-        this.load.image('game6_npc_box_win', `${path}game6_npc_box4.png`);
-        this.load.image('game6_npc_box_tryagain', `${path}game6_npc_box7.png`);
-
-        this.load.image('game6_boy_npc_box1', `${path}game6_npc_boy_box3.png`);
-        this.load.image('game5_boy_npc_box2', `${path}game6_npc_boy_box5.png`);
-
-        this.load.image('game6_girl_npc_box1', `${path}game6_npc_girl_box3.png`);
-        this.load.image('game6_girl_npc_box2', `${path}game6_npc_girl_box5.png`);
-
+        this.load.image('game6_npc_box_tryagain', `${path}game6_npc_box9.png`);
 
         for (let i = 1; i <= 8; i++) {
             this.load.image(`game6_object${i}`, `${path}game6_object${i}.png`);
         }
 
         this.load.image('game6_border1', `${path}game6_border1.png`);
-        this.load.image('game6_border2', `${path}game6_border2.png`);
+        this.load.image('game6_object_description', `${path}game6_object_description.png`);
 
     }
 
@@ -49,7 +52,7 @@ export class GameScene_6 extends BaseGameScene {
         this.centerX = this.width / 2;
         this.centerY = this.height / 2;
 
-        this.initGame('game6_bg', 'game6_description', false, false, {
+        this.initGame('game6_bg', 'game6_description', true, false, {
             targetRounds: 1,
             roundPerSeconds: 60,
             isAllowRoundFail: false,
@@ -57,18 +60,20 @@ export class GameScene_6 extends BaseGameScene {
             sceneIndex: 6
         });
 
+        // this.gameUI.descriptionPanel.setVisible(false);
+
         // Create confirm button
         this.confirmBtn = new CustomButton(this, this.centerX, this.height - 100,
             'confirm_button', 'confirm_button_select', () => {
                 this.checkAnswer();
             });
+
         this.confirmBtn.setDepth(600).setVisible(false);
     }
 
     setupGameObjects() {
 
-        this.border1 = this.add.image(this.centerX - 400, this.centerY, 'game6_border1').setDepth(500).setVisible(true);
-        this.border2 = this.add.image(this.centerX + 400, this.centerY, 'game6_border2').setDepth(500).setVisible(true);
+        this.border1 = this.add.image(this.centerX, this.centerY, 'game6_border1').setDepth(500).setVisible(true);
 
         // Track which object is at each position
         this.positionObjects = {};
@@ -76,28 +81,31 @@ export class GameScene_6 extends BaseGameScene {
         // Border 1 (left) - 4 positions in a 2x2 grid
         this.snapPositions = [
             // Border 1 positions
-            { x: this.centerX - 485, y: this.centerY - 90, isOccupied: false },
-            { x: this.centerX - 320, y: this.centerY - 90, isOccupied: false },
-            { x: this.centerX - 485, y: this.centerY + 90, isOccupied: false },
-            { x: this.centerX - 320, y: this.centerY + 90, isOccupied: false },
-            // Border 2 positions (right)
-            { x: this.centerX + 320, y: this.centerY - 90, isOccupied: false },
-            { x: this.centerX + 485, y: this.centerY - 90, isOccupied: false },
-            { x: this.centerX + 320, y: this.centerY + 90, isOccupied: false },
-            { x: this.centerX + 485, y: this.centerY + 90, isOccupied: false }
+            { x: this.centerX - 570, y: this.centerY - 100, isOccupied: false },
+            { x: this.centerX - 570, y: this.centerY + 125, isOccupied: false },
+
+            { x: this.centerX - 255, y: this.centerY - 100, isOccupied: false },
+            { x: this.centerX - 255, y: this.centerY + 125, isOccupied: false },
+
+            { x: this.centerX + 255, y: this.centerY - 100, isOccupied: false },
+            { x: this.centerX + 255, y: this.centerY + 125, isOccupied: false },
+
+            { x: this.centerX + 570, y: this.centerY - 100, isOccupied: false },
+            { x: this.centerX + 570, y: this.centerY + 125, isOccupied: false },
+
         ];
 
-        this.snapRadius = 90; // Distance threshold for snapping
+        this.snapRadius = 80; // Distance threshold for snapping
 
         const spawnPositions = [
-            { x: this.centerX - 780, y: this.centerY - 100 },
-            { x: this.centerX - 800, y: this.centerY + 100 },
-            { x: this.centerX, y: this.centerY + 200 },
-            { x: this.centerX, y: this.centerY - 200 },
-            { x: this.centerX + 100, y: this.centerY },
-            { x: this.centerX - 100, y: this.centerY },
-            { x: this.centerX + 800, y: this.centerY - 100 },
-            { x: this.centerX + 780, y: this.centerY + 100 }
+            { x: this.centerX - 780, y: this.centerY - 200 },
+            { x: this.centerX - 600, y: this.centerY + 380 },
+            { x: this.centerX + 600, y: this.centerY + 320 },
+            { x: this.centerX + 200, y: this.centerY + 380 },
+            { x: this.centerX - 200, y: this.centerY + 320 },
+            { x: this.centerX + 780, y: this.centerY - 200 },
+            { x: this.centerX - 780, y: this.centerY + 200 },
+            { x: this.centerX + 780, y: this.centerY + 200 }
         ];
 
 
@@ -118,10 +126,7 @@ export class GameScene_6 extends BaseGameScene {
 
             this.objects.push(obj);
         }
-
-        // Set up drag events
         this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-
             gameObject.x = dragX;
             gameObject.y = dragY;
         });
@@ -147,9 +152,10 @@ export class GameScene_6 extends BaseGameScene {
             }
         });
 
-        this.border1_correctObjects = [2, 5, 6, 8];
-        this.border2_correctObjects = [1, 3, 4, 7];
-        //this.drawDebug();
+        this.leftCorrectObjects = [1, 2, 3, 4];
+        this.rightCorrectObjects = [5, 6, 7, 8];
+
+        //  this.drawDebug();
 
     }
 
@@ -160,6 +166,14 @@ export class GameScene_6 extends BaseGameScene {
 
         for (let i = 0; i < this.snapPositions.length; i++) {
             const pos = this.snapPositions[i];
+            // Skip occupied positions unless it's occupied by the same object (moving within its own slot)
+            if (pos.isOccupied) {
+                const assignedId = this.positionObjects[i];
+                if (!gameObject || assignedId !== gameObject.objectId) {
+                    continue;
+                }
+            }
+
             const distance = Phaser.Math.Distance.Between(x, y, pos.x, pos.y);
             if (distance < minDistance) {
                 minDistance = distance;
@@ -182,10 +196,12 @@ export class GameScene_6 extends BaseGameScene {
             nearestPos.isOccupied = true;
 
             // Debug log for snap positions
-            if (nearestIndex >= 0 && nearestIndex <= 3) {
+            if (nearestIndex >= 0 && nearestIndex <= 1) {
                 console.log(`[SNAP] Object ${gameObject.objectId} snapped to snapPosition[${nearestIndex}] at border1`);
-            } else if (nearestIndex >= 4 && nearestIndex <= 7) {
+            } else if (nearestIndex >= 2 && nearestIndex <= 3) {
                 console.log(`[SNAP] Object ${gameObject.objectId} snapped to snapPosition[${nearestIndex}] at border2`);
+            } else if (nearestIndex >= 4 && nearestIndex <= 5) {
+                console.log(`[SNAP] Object ${gameObject.objectId} snapped to snapPosition[${nearestIndex}] at border3`);
             }
         }
 
@@ -193,12 +209,11 @@ export class GameScene_6 extends BaseGameScene {
     }
 
     checkIfAllOccupied() {
-        // Check if all positions (both borders) are occupied
         const allPositions = [0, 1, 2, 3, 4, 5, 6, 7];
         const allOccupied = allPositions.every(i => this.positionObjects.hasOwnProperty(i));
 
         if (allOccupied) {
-            console.log('[CHECK] All positions occupied (both borders)!');
+            console.log('[CHECK] All 8 positions occupied!');
             console.log('[CHECK] Current positions:', this.positionObjects);
             console.log('[CHECK] Click confirm button to check answer');
         }
@@ -221,28 +236,40 @@ export class GameScene_6 extends BaseGameScene {
     checkAnswer() {
         console.log('[ANSWER] Checking answer...');
 
-        // Check border 1 positions (0-3)
-        const border1Positions = [0, 1, 2, 3];
-        const border1Objects = border1Positions.map(i => this.positionObjects[i]).filter(id => id !== undefined);
+        const leftObjects = [0, 1, 2, 3].map(i => this.positionObjects[i]).filter(id => id !== undefined);
+        const rightObjects = [4, 5, 6, 7].map(i => this.positionObjects[i]).filter(id => id !== undefined);
 
-        // Check border 2 positions (4-7)
-        const border2Positions = [4, 5, 6, 7];
-        const border2Objects = border2Positions.map(i => this.positionObjects[i]).filter(id => id !== undefined)
-        // Check if border 1 has all correct objects
-        const border1Correct = this.border1_correctObjects.every(objId => border1Objects.includes(objId)) &&
-            border1Objects.length === this.border1_correctObjects.length;
+        const leftCorrect = this.leftCorrectObjects.every(id => leftObjects.includes(id)) &&
+            leftObjects.length === this.leftCorrectObjects.length;
+        const rightCorrect = this.rightCorrectObjects.every(id => rightObjects.includes(id)) &&
+            rightObjects.length === this.rightCorrectObjects.length;
 
-        // Check if border 2 has all correct objects
-        const border2Correct = this.border2_correctObjects.every(objId => border2Objects.includes(objId)) &&
-            border2Objects.length === this.border2_correctObjects.length;
-
-        if (border1Correct && border2Correct) {
-            console.log('[ANSWER] ✓ All objects correctly placed in both borders!');
+        if (leftCorrect && rightCorrect) {
+            console.log('[ANSWER] ✓ All objects correctly placed!');
             this.onRoundWin();
         } else {
             console.log('[ANSWER] ✗ Incorrect placement!');
             this.handleLose();
         }
+    }
+
+    handleLose() {
+        // Prevent multiple entries
+        if (this.gameState === 'gameLose') return;
+
+        this.currentFailCount = (this.currentFailCount || 0) + 1; // Increment fail count
+
+        // Standard Logic
+        this.isGameActive = false;
+        this.gameState = 'lose';
+
+        this.label = this.add.image(1650, 350, 'game_fail_label').setDepth(555);
+        if (this.gameTimer) this.gameTimer.stop();
+        this.enableGameInteraction(false);
+        this.updateRoundUI(false);
+        this.showBubble('tryagain');
+
+
     }
 
     resetForNewRound() {
@@ -257,23 +284,58 @@ export class GameScene_6 extends BaseGameScene {
         });
     }
 
+    onWinBubbleClose() {
+        const centerX = this.cameras.main.width / 2;
+        const centerY = this.cameras.main.height * 0.8;
+
+        this.win_01 = this.add.image(centerX, centerY, 'game6_npc_box_win_01')
+            .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+
+        this.win_01.once('pointerdown', () => {
+            this.win_01.destroy();
+            this.win_02 = this.add.image(centerX, centerY, 'game6_npc_box_win_02')
+                .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+            this.win_02.once('pointerdown', () => {
+                this.win_02.destroy();
+                this.win_03 = this.add.image(centerX, centerY, 'game6_npc_box_win_03')
+                    .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+                this.win_03.once('pointerdown', () => {
+                    this.win_03.destroy();
+                    super.onWinBubbleClose();
+                    this.showObjectPanel();
+                });
+            });
+        });
+
+    }
+
+
     showWin() {
         this.objects.forEach(obj => obj.setVisible(false));
         if (this.confirmBtn) this.confirmBtn.setVisible(false);
 
-        this.time.delayedCall(1500, () => {
-            GameManager.backToMainStreet(this);
-        });
+        this.showObjectPanel();
     }
 
-    drawDebug() {
+    showObjectPanel() {
+        const objectPanel = new CustomPanel(this, 960, 600, [{
+            content: 'game6_object_description',
+            closeBtn: 'close_btn',
+            closeBtnClick: 'close_btn_click'
+        }]);
+        objectPanel.setDepth(1000);
+        objectPanel.show();
+        objectPanel.setCloseCallBack(() => GameManager.backToMainStreet(this));
+    }
 
+
+    drawDebug() {
         // Debug graphics - draw snap positions
         this.debugGraphics = this.add.graphics();
         this.debugGraphics.lineStyle(2, 0xff0000, 0.5);
         this.debugGraphics.fillStyle(0xff0000, 0.2);
         this.snapPositions.forEach(pos => {
-            this.debugGraphics.strokeCircle(pos.x, pos.y, 60); // Draw outer circle
+            this.debugGraphics.strokeCircle(pos.x, pos.y, 80); // Draw outer circle
             this.debugGraphics.fillCircle(pos.x, pos.y, 5); // Draw center point
         });
         this.debugGraphics.setDepth(999); // Just below borders
