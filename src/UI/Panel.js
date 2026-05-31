@@ -380,7 +380,7 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
         // Create image for displaying question content
         this.contentImage = scene.add.image(0, 50, '').setDepth(200).setVisible(false);
 
-        this.questionBackground = scene.add.image(0, 20, '').setDepth(199).setVisible(false);
+        this.questionBackground = scene.add.image(0, 50, '').setDepth(199).setVisible(false);
 
         this.add([this.contentImage, this.questionBackground]);
 
@@ -488,10 +488,10 @@ export class QuestionPanel extends Phaser.GameObjects.Container {
                 this.scene.gameTimer.reset(this.scene.roundPerSeconds);
                 this.scene.gameTimer.start();
             }
-            this.confirmBtn.setVisible(true);
+            this.confirmBtn.setVisible(false);
             this.selectedAnswerIndex = -1;
+            this.questionBackground.setVisible(false);
             this.showQuestion();
-            this.showOptions();
         } else {
             console.log('All questions answered correctly!');
             this.scene.onRoundWin();

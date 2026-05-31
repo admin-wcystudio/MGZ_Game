@@ -144,7 +144,12 @@ export class GameScene_7 extends BaseGameScene {
         this.dialog.on('pointerdown', () => {
             this.dialog.destroy();
             this.dialog = null;
+            super.onWinBubbleClose();
         });
+    }
+
+    showWin() {
+        GameManager.switchToGameScene(this, 'GameResultScene');
     }
 
 
