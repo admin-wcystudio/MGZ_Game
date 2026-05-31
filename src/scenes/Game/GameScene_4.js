@@ -52,7 +52,7 @@ export class GameScene_4 extends BaseGameScene {
 
         this.initGame('game4_bg', 'game4_description', true, false, {
             targetRounds: 3,
-            roundPerSeconds: 30,
+            roundPerSeconds: 60,
             isAllowRoundFail: true,
             isContinuousTimer: false,
             sceneIndex: 4
@@ -200,12 +200,18 @@ export class GameScene_4 extends BaseGameScene {
         console.log('Checking all cards...');
         let allCorrect = true;
 
+        const swappable = ['game4_card3', 'game4_card8'];
+        const isValidPlacement = (placedKey, targetKey) => {
+            if (swappable.includes(targetKey) && swappable.includes(placedKey)) return true;
+            return targetKey === placedKey;
+        };
+
         this.defaultCards.forEach(cardInfo => {
             if (cardInfo.occupiedBy) {
                 const placedKey = cardInfo.occupiedBy.texture.key;
                 const targetKey = cardInfo.content;
 
-                if (targetKey === placedKey) {
+                if (isValidPlacement(placedKey, targetKey)) {
                     cardInfo.occupiedBy.setData('isCorrect', true);
                 } else {
                     cardInfo.occupiedBy.setData('isCorrect', false);
@@ -237,7 +243,7 @@ export class GameScene_4 extends BaseGameScene {
         // Feedback Visuals
         this.showFeedbackLabel(true);
 
-        this.successDescription = this.add.image(this.centerX, this.centerY - 100, 'game4_success_description')
+        this.successDescription = this.add.image(960, 540, 'game4_success_description')
             .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
 
         this.successDescription.once('pointerdown', () => {
@@ -285,7 +291,6 @@ export class GameScene_4 extends BaseGameScene {
         this.cardGroup.setVisible(false);
         this.confirm_button.setVisible(false);
         this.showObjectPanel();
-
     }
 
     showObjectPanel() {
