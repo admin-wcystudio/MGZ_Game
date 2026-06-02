@@ -259,7 +259,7 @@ export class MainStreetScene extends Phaser.Scene {
 
         this.bubbleTimers = [];
         const npc1_bubbles = ['npc1_bubble_1'];
-        const npc2_bubbles = ['npc2_bubble_1'];
+        const npc2_bubbles = ['npc2_bubble_1', `game2_${genderKey}_bubble_2`, `game2_${genderKey}_bubble_3`, 'npc2_bubble_4'];
         const npc3_bubbles = ['npc3_bubble_1'];
         const npc4_bubbles = ['npc4_bubble_1', 'npc4_bubble_2'];
         const npc5_bubbles = ['npc5_bubble_1', 'npc5_bubble_2'];
@@ -275,7 +275,7 @@ export class MainStreetScene extends Phaser.Scene {
         const n1 = NpcHelper.createNpc(this, 1, 1200, 500, 1, 'npc1', npc1_bubbles, 6, 'npc1_anim');
         const n2 = NpcHelper.createNpc(this, 2, 3200, 550, 1, 'npc2', npc2_bubbles, 6, 'npc2_anim');
         const n3 = NpcHelper.createNpc(this, 3, 1650, 550, 1, 'npc3', npc3_bubbles, 6, 'npc3_anim');
-        const n4 = NpcHelper.createNpc(this, 4, 3750, 750, 1, 'npc4', npc4_bubbles, 6, 'npc4_anim');
+        const n4 = NpcHelper.createNpc(this, 4, 3600, 750, 1, 'npc4', npc4_bubbles, 15, 'npc4_anim');
         const n5 = NpcHelper.createNpc(this, 5, 2700, 500, 1, 'npc5', npc5_bubbles, 6, 'npc5_anim');
         const n6 = NpcHelper.createNpc(this, 6, 2150, 550, 1, 'npc6', npc6_bubbles, 6, 'npc6_anim');
         const n7 = NpcHelper.createNpc(this, 7, 700, 600, 1, 'npc7', npc7_bubbles, 6, 'npc7_anim');
@@ -290,42 +290,18 @@ export class MainStreetScene extends Phaser.Scene {
 
         this.currentInteractiveNpc = null;
 
-        // Add global input listener to stop movement when pointer is released anywhere
-        this.input.on('pointerup', () => {
-            this.isLeftDown = false;
-            this.isRightDown = false;
-        });
-
-        // NPC 1, 3, 4: single bubble -> game (no character bubble)
-        [n1, n3, n4].forEach(npc => {
+        const npcGameMap = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7 };
+        this.interactiveNpcs.forEach((npc, index) => {
             npc.on('pointerdown', () => {
                 if (npc.canInteract) {
-                    const sceneKey = `GameScene_${npc.id}`;
-                    this.loadBubble(0, npc.bubbles, sceneKey, npc, null);
+                    const gameNumber = npcGameMap[npc.id] ?? (index + 1);
+                    const sceneKey = `GameScene_${gameNumber}`;
+                    const characterbubble = `game${gameNumber}_${genderKey}_bubble`;
+                    this.loadBubble(0, npc.bubbles, sceneKey, npc, characterbubble);
                 }
             });
         });
 
-        // NPC 2: multi-step flow with character bubbles
-        n2.on('pointerdown', () => {
-            if (n2.canInteract) {
-                this.loadBubble_game2(n2, 'GameScene_2', genderKey);
-            }
-        });
-
-        // NPCs 5, 6, 7: single bubble -> game, with reject sets
-        n5.rejectBubbles = npc5_reject_bubbles;
-        n6.rejectBubbles = npc6_reject_bubbles;
-        n7.rejectBubbles = npc7_reject_bubbles;
-
-        [n5, n6, n7].forEach(npc => {
-            npc.on('pointerdown', () => {
-                if (npc.canInteract) {
-                    const sceneKey = `GameScene_${npc.id}`;
-                    this.loadBubble(0, npc.bubbles, sceneKey, npc, null);
-                }
-            });
-        });
 
 
         this.playerSprite = this.add.sprite(playerPos.x, playerPos.y,
@@ -620,7 +596,7 @@ export class MainStreetScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'boy_left_talk_anim',
-            frames: this.anims.generateFrameNumbers('boy_left_talk', { start: 0, end: 194 }),
+            frames: this.anims.generateFrameNumbers('boy_left_talk', { start: 0, end: 94 }),
             frameRate: 24,
             repeat: -1
         });
