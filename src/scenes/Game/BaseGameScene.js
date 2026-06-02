@@ -91,7 +91,7 @@ export default class BaseGameScene extends Phaser.Scene {
 
         this.gameUI.descriptionPanel.show();
 
-        console.log('Game UI Initialized , Gender:', this.playerGender);
+        console.log('Game UI Initialized ');
 
         this._setupTimer();
         this.setupGameObjects();

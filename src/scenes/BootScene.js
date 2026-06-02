@@ -68,7 +68,7 @@ export class BootScene extends Phaser.Scene {
             'game1_object_description',
             'itempage_item2_select',
             'itempage_item2',
-            'game2_object_description',
+            ['game2_object_description1', 'game2_object_description2'],
             'itempage_item3',
             'itempage_item3_select',
             'game3_object_description',
@@ -136,7 +136,7 @@ export class BootScene extends Phaser.Scene {
 
             this.registry.set('globalSettings', settings);
         }
-        this.scene.start('GameResultScene');
+        this.scene.start('GameScene_2');
     }
 }
 

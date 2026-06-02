@@ -15,13 +15,30 @@ export class GameScene_2 extends BaseGameScene {
         this.centerX = this.width / 2;
         this.centerY = this.height / 2;
 
+        this.gender = 'M';
+        if (localStorage.getItem('player')) {
+            this.gender = JSON.parse(localStorage.getItem('player')).gender;
+        }
 
-        this.load.image('game2_npc_box_mainstreet_fail_01', `${path}game2_npc_box1.png`);
-        this.load.image('game2_npc_box_mainstreet_fail_02', `${path}game2_npc_box2.png`);
-        this.load.image('game2_npc_box_mainstreet', `${path}game2_npc_box3.png`);
+        this.load.image('game2_bg', `${path}game2_bg.png`)
 
-        this.load.image('game2_npc_box_win', `${path}game2_npc_box4.png`);
-        this.load.image('game2_npc_box_tryagain', `${path}game2_npc_box5.png`);
+        this.load.image('game2_npc_box_mainstreet', `${path}game2_npc_box1.png`);
+
+        if (this.gender === 'M') {
+            this.load.image('game2_npc_box_mainstreet_01', `${path}game2_npc_box2_boy.png`);
+            this.load.image('game2_npc_box_mainstreet_02', `${path}game2_npc_box3_boy.png`);
+        } else {
+            this.load.image('game2_npc_box_mainstreet_01', `${path}game2_npc_box2_girl.png`);
+            this.load.image('game2_npc_box_mainstreet_02', `${path}game2_npc_box3_girl.png`);
+        }
+        this.load.image('game2_npc_box_mainstreet_03', `${path}game2_npc_box4.png`);
+
+        this.load.image('game2_npc_box_win', `${path}game2_npc_box5.png`);
+        this.load.image('game2_npc_box_win_01', `${path}game2_npc_box6.png`);
+
+        this.load.image('game2_npc_box_tryagain', `${path}game2_npc_box7.png`);
+        this.load.image('game2_npc_box_tryagain_01', `${path}game2_npc_box8.png`);
+
         this.load.image('up_btn', `${path}game2_up_button.png`);
         this.load.image('up_btn_click', `${path}game2_up_button_click.png`);
         this.load.image('down_btn', `${path}game2_down_button.png`);
@@ -33,14 +50,18 @@ export class GameScene_2 extends BaseGameScene {
 
 
         for (let i = 1; i <= 3; i++) {
-            this.load.image(`game2_fail_object${i}`, `${path}game2_fail_object${i}.png`);
             this.load.image(`game2_success_object${i}`, `${path}game2_success_object${i}.png`);
+            this.load.image(`game2_fail_object${i}`, `${path}game2_fail_object${i}.png`);
         }
+        this.load.image('game2_description1', 'assets/images/Game_2/game2_description1.png');
+        this.load.image('game2_description2', 'assets/images/Game_2/game2_description2.png');
 
-        this.gender = 'M';
-        if (localStorage.getItem('player')) {
-            this.gender = JSON.parse(localStorage.getItem('player')).gender;
-        }
+        this.load.image('game2_object_description1', `${path}game2_object_description1.png`);
+        this.load.image('game2_object_description2', `${path}game2_object_description2.png`);
+
+
+
+        // Load character spritesheets
         if (this.gender === 'M') {
             this.load.spritesheet('boy_backstop', path +
                 'game2_boy_backstop.png', { frameWidth: 105, frameHeight: 105 });
@@ -101,7 +122,7 @@ export class GameScene_2 extends BaseGameScene {
         this.playerStartX = this.centerX;
         this.playerStartY = 750;
 
-        this.initGame('game2_bg', 'game2_description', true, false, {
+        this.initGame('game2_bg', ['game2_description1', 'game2_description2'], true, false, {
             targetRounds: 3,
             roundPerSeconds: 60,
             isAllowRoundFail: false,
@@ -130,7 +151,7 @@ export class GameScene_2 extends BaseGameScene {
 
         // Character setup
         this.genderKey = this.gender === 'M' ? 'boy' : 'girl';
-        console.log('genderKey:', this.genderKey);
+        //  console.log('genderKey:', this.genderKey);
 
         // Use frontstop for boy, frontwalking for girl (girl_frontstop doesn't exist)
         const idleKey = this.gender === 'M' ? 'frontstop' : 'frontwalking';
@@ -273,7 +294,7 @@ export class GameScene_2 extends BaseGameScene {
 
         // Manual intersection check against walls using points instead of Arcade physics
         if (this.wouldCollideWithWall(targetX, targetY)) {
-            console.log('[GameScene_4] Blocked by wall!');
+            //   console.log('[GameScene_4] Blocked by wall!');
             return;
         }
 
@@ -306,7 +327,7 @@ export class GameScene_2 extends BaseGameScene {
         for (const wall of this.wallRects) {
             const wallRect = new Phaser.Geom.Rectangle(wall.x, wall.y, wall.width, wall.height);
             if (Phaser.Geom.Intersects.RectangleToRectangle(playerRect, wallRect)) {
-                console.log(`[Wall Block] player feet at (${x.toFixed(0)}, ${feetY.toFixed(0)}) hit wall: x=${wall.x.toFixed(0)} y=${wall.y.toFixed(0)} w=${wall.width} h=${wall.height}`);                // Flash the blocking wall red
+                // console.log(`[Wall Block] player feet at (${x.toFixed(0)}, ${feetY.toFixed(0)}) hit wall: x=${wall.x.toFixed(0)} y=${wall.y.toFixed(0)} w=${wall.width} h=${wall.height}`);                // Flash the blocking wall red
                 this.lastBlockedWall = wall;
                 this.lastBlockedTime = this.time.now;
 
@@ -326,7 +347,7 @@ export class GameScene_2 extends BaseGameScene {
             if (dist < hitRadius) {
                 failObj.setVisible(false);
                 this.collectedFailObjects++;
-                console.log(`[GameScene_4] Fail object hit! Fails: ${this.collectedFailObjects}`);
+                // console.log(`[GameScene_4] Fail object hit! Fails: ${this.collectedFailObjects}`);
 
                 // Update the round UI indicator based on total objects collected
                 this.roundIndex = this.collectedSuccessObjects + this.collectedFailObjects - 1;
@@ -346,7 +367,7 @@ export class GameScene_2 extends BaseGameScene {
             if (dist < pickupRadius) {
                 successObj.setVisible(false);
                 this.collectedSuccessObjects++;
-                console.log(`[GameScene_4] Success object collected! (${this.collectedSuccessObjects}/3)`);
+                // console.log(`[GameScene_4] Success object collected! (${this.collectedSuccessObjects}/3)`);
 
                 // Update the round UI indicator based on total objects collected
                 this.roundIndex = this.collectedSuccessObjects + this.collectedFailObjects - 1;
@@ -375,13 +396,13 @@ export class GameScene_2 extends BaseGameScene {
 
         Phaser.Utils.Array.Shuffle(failObjectPositions);
 
-        failObjectPositions.forEach(pos => {
+        failObjectPositions.forEach((pos, i) => {
             if (this.failObjects.length == this.maxFailObjects) return;
-            const randomFail = `game2_fail_object${Phaser.Math.Between(1, 3)}`;
-            const failSprite = this.add.image(pos.x, pos.y, randomFail).setDepth(2);
+            const failKey = `game2_fail_object${(i % 3) + 1}`;
+            const failSprite = this.add.image(pos.x, pos.y, failKey).setDepth(2);
             this.failObjects.push(failSprite);
         });
-        console.log(`[GameScene_4] Placed ${this.failObjects.length} fail objects`);
+        // console.log(`[GameScene_2] Placed ${this.failObjects.length} fail objects`);
     }
 
     placeSuccessObjects() {
@@ -400,13 +421,13 @@ export class GameScene_2 extends BaseGameScene {
 
         Phaser.Utils.Array.Shuffle(successObjectPositions);
 
-        successObjectPositions.forEach(pos => {
+        successObjectPositions.forEach((pos, i) => {
             if (this.successObjects.length == this.maxSuccessObjects) return;
-            const randomSuccess = `game2_success_object${Phaser.Math.Between(1, 3)}`;
-            const successSprite = this.add.image(pos.x, pos.y, randomSuccess).setDepth(2);
+            const successKey = `game2_success_object${(i % 3) + 1}`;
+            const successSprite = this.add.image(pos.x, pos.y, successKey).setDepth(2);
             this.successObjects.push(successSprite);
         });
-        console.log(`[GameScene_4] Placed ${this.successObjects.length} success objects`);
+        //console.log(`[GameScene_2] Placed ${this.successObjects.length} success objects`);
     }
 
     enableGameInteraction(enabled) {
@@ -485,13 +506,25 @@ export class GameScene_2 extends BaseGameScene {
     }
 
     onWinBubbleClose() {
-        GameManager.saveGameResult(4, true, this.totalUsedSeconds);
+        const centerX = this.cameras.main.width / 2;
+        const centerY = this.cameras.main.height * 0.8;
+
+        this.win_02 = this.add.image(centerX, centerY, 'game2_npc_box_win_01')
+            .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+        this.win_02.once('pointerdown', () => {
+            this.win_02.destroy();
+            this.win_02 = null;
+            super.onWinBubbleClose();
+        });
+    }
+
+    showWin() {
         this.showObjectPanel();
     }
 
     showObjectPanel() {
         const objectPanel = new CustomPanel(this, 960, 600, [{
-            content: 'game2_object_description',
+            content: ['game2_object_description1', 'game2_object_description2'],
             closeBtn: 'close_btn',
             closeBtnClick: 'close_btn_click'
         }]);
@@ -500,102 +533,117 @@ export class GameScene_2 extends BaseGameScene {
         objectPanel.setCloseCallBack(() => GameManager.backToMainStreet(this));
     }
 
+    onLoseBubbleClose() {
+        const centerX = this.cameras.main.width / 2;
+        const centerY = this.cameras.main.height * 0.8;
+        this.lose_01 = this.add.image(centerX, centerY, 'game2_npc_box_tryagain_01')
+            .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+
+        this.lose_01.on('pointerdown', () => {
+            this.lose_01.destroy();
+            this.lose_01 = null;
+            super.onLoseBubbleClose();
+        });
+    }
+
+
     createAnimations() {
-        // Skip if already created (e.g. on scene restart)
-        if (this.anims.exists('boy_backstop_anim')) return;
 
-        // Boy animations
-        this.anims.create({
-            key: 'boy_backstop_anim',
-            frames: this.anims.generateFrameNumbers('boy_backstop', { start: 0, end: 47 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'boy_backwalking_anim',
-            frames: this.anims.generateFrameNumbers('boy_backwalking', { start: 0, end: 66 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'boy_frontstop_anim',
-            frames: this.anims.generateFrameNumbers('boy_frontstop', { start: 0, end: 47 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'boy_frontwalking_anim',
-            frames: this.anims.generateFrameNumbers('boy_frontwalking', { start: 0, end: 47 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'boy_leftstop_anim',
-            frames: this.anims.generateFrameNumbers('boy_leftstop', { start: 0, end: 47 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'boy_leftwalking_anim',
-            frames: this.anims.generateFrameNumbers('boy_leftwalking', { start: 0, end: 66 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'boy_rightstop_anim',
-            frames: this.anims.generateFrameNumbers('boy_rightstop', { start: 0, end: 47 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'boy_rightwalking_anim',
-            frames: this.anims.generateFrameNumbers('boy_rightwalking', { start: 0, end: 66 }),
-            frameRate: 30,
-            repeat: -1
-        });
+        if (this.gender === 'M') {
+            // Boy animations
+            this.anims.create({
+                key: 'boy_backstop_anim',
+                frames: this.anims.generateFrameNumbers('boy_backstop', { start: 0, end: 47 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'boy_backwalking_anim',
+                frames: this.anims.generateFrameNumbers('boy_backwalking', { start: 0, end: 66 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'boy_frontstop_anim',
+                frames: this.anims.generateFrameNumbers('boy_frontstop', { start: 0, end: 47 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'boy_frontwalking_anim',
+                frames: this.anims.generateFrameNumbers('boy_frontwalking', { start: 0, end: 47 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'boy_leftstop_anim',
+                frames: this.anims.generateFrameNumbers('boy_leftstop', { start: 0, end: 47 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'boy_leftwalking_anim',
+                frames: this.anims.generateFrameNumbers('boy_leftwalking', { start: 0, end: 66 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'boy_rightstop_anim',
+                frames: this.anims.generateFrameNumbers('boy_rightstop', { start: 0, end: 47 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'boy_rightwalking_anim',
+                frames: this.anims.generateFrameNumbers('boy_rightwalking', { start: 0, end: 66 }),
+                frameRate: 30,
+                repeat: -1
+            });
+        } else {
 
-        // Girl animations
-        this.anims.create({
-            key: 'girl_backstop_anim',
-            frames: this.anims.generateFrameNumbers('girl_backstop', { start: 0, end: 66 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'girl_backwalking_anim',
-            frames: this.anims.generateFrameNumbers('girl_backwalking', { start: 0, end: 66 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'girl_frontwalking_anim',
-            frames: this.anims.generateFrameNumbers('girl_frontwalking', { start: 0, end: 66 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'girl_leftstop_anim',
-            frames: this.anims.generateFrameNumbers('girl_leftstop', { start: 0, end: 66 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'girl_leftwalking_anim',
-            frames: this.anims.generateFrameNumbers('girl_leftwalking', { start: 0, end: 66 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'girl_rightstop_anim',
-            frames: this.anims.generateFrameNumbers('girl_rightstop', { start: 0, end: 66 }),
-            frameRate: 30,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'girl_rightwalking_anim',
-            frames: this.anims.generateFrameNumbers('girl_rightwalking', { start: 0, end: 66 }),
-            frameRate: 24,
-            repeat: -1
-        });
+            // Girl animations
+            this.anims.create({
+                key: 'girl_backstop_anim',
+                frames: this.anims.generateFrameNumbers('girl_backstop', { start: 0, end: 66 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'girl_backwalking_anim',
+                frames: this.anims.generateFrameNumbers('girl_backwalking', { start: 0, end: 66 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'girl_frontwalking_anim',
+                frames: this.anims.generateFrameNumbers('girl_frontwalking', { start: 0, end: 66 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'girl_leftstop_anim',
+                frames: this.anims.generateFrameNumbers('girl_leftstop', { start: 0, end: 66 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'girl_leftwalking_anim',
+                frames: this.anims.generateFrameNumbers('girl_leftwalking', { start: 0, end: 66 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'girl_rightstop_anim',
+                frames: this.anims.generateFrameNumbers('girl_rightstop', { start: 0, end: 66 }),
+                frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'girl_rightwalking_anim',
+                frames: this.anims.generateFrameNumbers('girl_rightwalking', { start: 0, end: 66 }),
+                frameRate: 24,
+                repeat: -1
+            });
+        }
     }
 }
