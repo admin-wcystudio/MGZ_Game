@@ -261,10 +261,10 @@ export class MainStreetScene extends Phaser.Scene {
         const npc1_bubbles = ['npc1_bubble_1'];
         const npc2_bubbles = ['npc2_bubble_1'];
         const npc3_bubbles = ['npc3_bubble_1'];
-        const npc4_bubbles = ['npc4_bubble_1'];
-        const npc5_bubbles = ['npc5_bubble_1'];
+        const npc4_bubbles = ['npc4_bubble_1', 'npc4_bubble_2'];
+        const npc5_bubbles = ['npc5_bubble_1', 'npc5_bubble_2'];
         const npc5_reject_bubbles = ['npc5_bubble_reject', 'npc5_bubble_reject_02'];
-        const npc6_bubbles = ['npc6_bubble_1'];
+        const npc6_bubbles = ['npc6_bubble_1', 'npc6_bubble_2'];
         const npc6_reject_bubbles = ['npc6_bubble_reject', 'npc6_bubble_reject_02'];
         const npc7_bubbles = ['npc7_bubble_1'];
         const npc7_reject_bubbles = ['npc7_bubble_reject', 'npc7_bubble_reject_02'];
@@ -317,6 +317,7 @@ export class MainStreetScene extends Phaser.Scene {
         n5.rejectBubbles = npc5_reject_bubbles;
         n6.rejectBubbles = npc6_reject_bubbles;
         n7.rejectBubbles = npc7_reject_bubbles;
+
         [n5, n6, n7].forEach(npc => {
             npc.on('pointerdown', () => {
                 if (npc.canInteract) {
@@ -437,121 +438,74 @@ export class MainStreetScene extends Phaser.Scene {
     }
 
 
-    loadBubble(index = 0, bubbles, sceneKey, targetNpc, characterbubble) {
-        const facingLeft = (this.playerSprite.x - targetNpc.x) > 0;
 
-        if (this.currentActiveBubble) this.currentActiveBubble.destroy();
-        if (this.characterActiveBubble) this.characterActiveBubble.destroy();
-        this.characterActiveBubble = null;
+
+    loadBubble(index = 0, bubbles, sceneKey, targetNpc, characterbubble) {
+
+        if (this.currentActiveBubble) {
+            this.currentActiveBubble.destroy();
+        }
+        if (this.characterActiveBubble) {
+            this.characterActiveBubble.destroy();
+        }
 
         this.bubbleImg = this.add.image(this.centerX, 900, bubbles[index])
-            .setDepth(200).setInteractive({ useHandCursor: true }).setScrollFactor(0);
+            .setDepth(200)
+            .setInteractive({ useHandCursor: true })
+            .setScrollFactor(0);
+
+        // 綁定當前 NPC 到對話框，方便 update 檢查距離
         this.bubbleImg.ownerNpc = targetNpc;
         this.currentActiveBubble = this.bubbleImg;
 
-        this.tweens.add({ targets: this.bubbleImg, scale: { from: 0.5, to: 1 }, duration: 200, ease: 'Back.easeOut' });
+        this.switchTalkingAnimation(this.genderKey, targetNpc.x < this.playerSprite.x);
+
+        this.characterBubbleImg = this.add.image(this.centerX, 900, characterbubble)
+            .setDepth(200)
+            .setInteractive({ useHandCursor: true })
+            .setVisible(false)
+            .setScrollFactor(0);
+
+        this.characterActiveBubble = this.characterBubbleImg;
+        this.characterActiveBubble.ownerNpc = targetNpc;
+
 
         this.bubbleImg.on('pointerdown', () => {
             this.bubbleImg.destroy();
             this.currentActiveBubble = null;
 
-            if (characterbubble) {
-                // Show character bubble then start game
-                const timer1 = this.time.delayedCall(500, () => {
-                    if (!targetNpc.canInteract) return;
-                    this.characterBubbleImg = this.add.image(this.centerX, 900, characterbubble)
-                        .setDepth(200).setInteractive({ useHandCursor: true }).setScrollFactor(0);
-                    this.characterBubbleImg.ownerNpc = targetNpc;
-                    this.characterActiveBubble = this.characterBubbleImg;
-                    this.switchTalkingAnimation(this.genderKey, facingLeft);
-                    this.tweens.add({ targets: this.characterBubbleImg, scale: { from: 0.5, to: 1 }, duration: 200, ease: 'Back.easeOut' });
-
-                    this.characterBubbleImg.on('pointerdown', () => {
-                        this.characterBubbleImg.destroy();
-                        this.characterActiveBubble = null;
-                        const timer2 = this.time.delayedCall(500, () => {
-                            if (sceneKey) {
-                                localStorage.setItem('playerPosition', JSON.stringify({ x: this.playerSprite.x, y: this.playerSprite.y }));
-                                GameManager.switchToGameScene(this, sceneKey);
-                            }
-                        });
-                        this.bubbleTimers.push(timer2);
-                    });
-                });
-                this.bubbleTimers.push(timer1);
-            } else {
-                // No character bubble — go directly to game
-                const timer1 = this.time.delayedCall(500, () => {
-                    if (!targetNpc.canInteract) return;
-                    if (sceneKey) {
-                        localStorage.setItem('playerPosition', JSON.stringify({ x: this.playerSprite.x, y: this.playerSprite.y }));
-                        GameManager.switchToGameScene(this, sceneKey);
-                    }
-                });
-                this.bubbleTimers.push(timer1);
+            // If there is another bubble in the sequence, show it instead of the character bubble.
+            if (index < bubbles.length - 1) {
+                this.loadBubble(index + 1, bubbles, sceneKey, targetNpc, characterbubble);
+                return;
             }
-        });
-    }
 
-    loadBubble_game2(targetNpc, sceneKey, genderKey) {
-        const facingLeft = (this.playerSprite.x - targetNpc.x) > 0;
-
-        if (this.currentActiveBubble) this.currentActiveBubble.destroy();
-        if (this.characterActiveBubble) this.characterActiveBubble.destroy();
-        this.currentActiveBubble = null;
-        this.characterActiveBubble = null;
-
-        const showImg = (key, isChar) => {
-            const img = this.add.image(this.centerX, 900, key)
-                .setDepth(200).setInteractive({ useHandCursor: true }).setScrollFactor(0);
-            img.ownerNpc = targetNpc;
-            this.tweens.add({ targets: img, scale: { from: 0.5, to: 1 }, duration: 200, ease: 'Back.easeOut' });
-            if (isChar) this.characterActiveBubble = img;
-            else this.currentActiveBubble = img;
-            return img;
-        };
-
-        // Step 1: npc2_bubble_1
-        const b1 = showImg('npc2_bubble_1', false);
-        b1.on('pointerdown', () => {
-            b1.destroy(); this.currentActiveBubble = null;
-            // Step 2: character bubble 2
-            const t1 = this.time.delayedCall(300, () => {
-                if (!targetNpc.canInteract) return;
-                this.switchTalkingAnimation(genderKey, facingLeft);
-                const b2 = showImg(`game2_${genderKey}_bubble_2`, true);
-                b2.on('pointerdown', () => {
-                    b2.destroy(); this.characterActiveBubble = null;
-                    // Step 3: character bubble 3
-                    const t2 = this.time.delayedCall(300, () => {
-                        if (!targetNpc.canInteract) return;
-                        const b3 = showImg(`game2_${genderKey}_bubble_3`, true);
-                        b3.on('pointerdown', () => {
-                            b3.destroy(); this.characterActiveBubble = null;
-                            // Step 4: npc2_bubble_4
-                            const t3 = this.time.delayedCall(300, () => {
-                                if (!targetNpc.canInteract) return;
-                                const b4 = showImg('npc2_bubble_4', false);
-                                b4.on('pointerdown', () => {
-                                    b4.destroy(); this.currentActiveBubble = null;
-                                    const t4 = this.time.delayedCall(500, () => {
-                                        if (sceneKey) {
-                                            localStorage.setItem('playerPosition', JSON.stringify({ x: this.playerSprite.x, y: this.playerSprite.y }));
-                                            GameManager.switchToGameScene(this, sceneKey);
-                                        }
-                                    });
-                                    this.bubbleTimers.push(t4);
-                                });
-                            });
-                            this.bubbleTimers.push(t3);
-                        });
-                    });
-                    this.bubbleTimers.push(t2);
-                });
+            this.time.delayedCall(500, () => {
+                if (sceneKey && targetNpc.canInteract) {
+                    localStorage.setItem('playerPosition', JSON.stringify({ x: this.playerSprite.x, y: this.playerSprite.y }));
+                    GameManager.switchToGameScene(this, sceneKey);
+                }
             });
-            this.bubbleTimers.push(t1);
+        });
+
+        // Store this timer so we can stop i
+
+        // 彈出動畫
+        this.tweens.add({
+            targets: this.bubbleImg,
+            scale: { from: 0.5, to: 1 },
+            duration: 200,
+            ease: 'Back.easeOut'
+        });
+
+        this.tweens.add({
+            targets: this.characterBubbleImg,
+            scale: { from: 0.5, to: 1 },
+            duration: 200,
+            ease: 'Back.easeOut'
         });
     }
+
 
     createAnimations() {
 
