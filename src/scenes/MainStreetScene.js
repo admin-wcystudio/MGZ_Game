@@ -162,17 +162,17 @@ export class MainStreetScene extends Phaser.Scene {
         this.load.spritesheet('npc4_select', 'assets/images/MainStreet/NPCs/NPC4_select.png',
             { frameWidth: 260.5, frameHeight: 322 });
         this.load.spritesheet('npc5', 'assets/images/MainStreet/NPCs/NPC5.png',
-            { frameWidth: 201.85, frameHeight: 213 });
+            { frameWidth: 134.5, frameHeight: 213 });
         this.load.spritesheet('npc5_select', 'assets/images/MainStreet/NPCs/NPC5_select.png',
-            { frameWidth: 201.85, frameHeight: 213 });
+            { frameWidth: 134.5, frameHeight: 213 });
         this.load.spritesheet('npc6', 'assets/images/MainStreet/NPCs/NPC6.png',
             { frameWidth: 209, frameHeight: 235.5 });
         this.load.spritesheet('npc6_select', 'assets/images/MainStreet/NPCs/NPC6_select.png',
             { frameWidth: 209, frameHeight: 235.5 });
         this.load.spritesheet('npc7', 'assets/images/MainStreet/NPCs/NPC7.png',
-            { frameWidth: 193.33, frameHeight: 351.6 });
+            { frameWidth: 195, frameHeight: 351.6 });
         this.load.spritesheet('npc7_select', 'assets/images/MainStreet/NPCs/NPC7_select.png',
-            { frameWidth: 193.33, frameHeight: 351.6 });
+            { frameWidth: 195, frameHeight: 351.6 });
     }
 
     create() {
@@ -191,7 +191,7 @@ export class MainStreetScene extends Phaser.Scene {
         const genderKey = this.genderKey;
 
         const playerPos = localStorage.getItem('playerPosition')
-            ? JSON.parse(localStorage.getItem('playerPosition')) : { x: 1500, y: 600 };
+            ? JSON.parse(localStorage.getItem('playerPosition')) : { x: 1500, y: 700 };
         this.playerPos = playerPos;
 
 
@@ -272,13 +272,13 @@ export class MainStreetScene extends Phaser.Scene {
         // NPCs (trigger game)
         this.interactiveNpcs = [];
 
-        const n1 = NpcHelper.createNpc(this, 1, 850, 550, 1, 'npc1', npc1_bubbles, 6, 'npc1_anim');
-        const n2 = NpcHelper.createNpc(this, 2, 1450, 550, 1, 'npc2', npc2_bubbles, 6, 'npc2_anim');
-        const n3 = NpcHelper.createNpc(this, 3, 2800, 550, 1, 'npc3', npc3_bubbles, 6, 'npc3_anim');
-        const n4 = NpcHelper.createNpc(this, 4, 3350, 550, 1, 'npc4', npc4_bubbles, 6, 'npc4_anim');
-        const n5 = NpcHelper.createNpc(this, 5, 3800, 750, 1, 'npc5', npc5_bubbles, 15, 'npc5_anim');
-        const n6 = NpcHelper.createNpc(this, 6, 4700, 550, 1, 'npc6', npc6_bubbles, 6, 'npc6_anim');
-        const n7 = NpcHelper.createNpc(this, 7, 5100, 550, 1, 'npc7', npc7_bubbles, 6, 'npc7_anim');
+        const n1 = NpcHelper.createNpc(this, 1, 1200, 650, 1, 'npc1', npc1_bubbles, 6, 'npc1_anim');
+        const n2 = NpcHelper.createNpc(this, 2, 3200, 550, 1, 'npc2', npc2_bubbles, 6, 'npc2_anim');
+        const n3 = NpcHelper.createNpc(this, 3, 1650, 550, 1, 'npc3', npc3_bubbles, 6, 'npc3_anim');
+        const n4 = NpcHelper.createNpc(this, 4, 3750, 750, 1, 'npc4', npc4_bubbles, 6, 'npc4_anim');
+        const n5 = NpcHelper.createNpc(this, 5, 2700, 500, 1, 'npc5', npc5_bubbles, 6, 'npc5_anim');
+        const n6 = NpcHelper.createNpc(this, 6, 2150, 550, 1, 'npc6', npc6_bubbles, 6, 'npc6_anim');
+        const n7 = NpcHelper.createNpc(this, 7, 700, 600, 1, 'npc7', npc7_bubbles, 6, 'npc7_anim');
 
         this.interactiveNpcs.push(n1);
         this.interactiveNpcs.push(n2);
@@ -562,99 +562,99 @@ export class MainStreetScene extends Phaser.Scene {
         // NPC Animations
         this.anims.create({
             key: 'npc1_anim',
-            frames: this.anims.generateFrameNumbers('npc1', { start: 0, end: 70 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc1', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc1_select_anim',
-            frames: this.anims.generateFrameNumbers('npc1_select', { start: 0, end: 70 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc1_select', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc2_anim',
-            frames: this.anims.generateFrameNumbers('npc2', { start: 0, end: 68 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc2', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc2_select_anim',
-            frames: this.anims.generateFrameNumbers('npc2_select', { start: 0, end: 68 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc2_select', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc3_anim',
-            frames: this.anims.generateFrameNumbers('npc3', { start: 0, end: 75 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc3', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc3_select_anim',
-            frames: this.anims.generateFrameNumbers('npc3_select', { start: 0, end: 75 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc3_select', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc4_anim',
-            frames: this.anims.generateFrameNumbers('npc4', { start: 0, end: 94 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc4', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc4_select_anim',
-            frames: this.anims.generateFrameNumbers('npc4_select', { start: 0, end: 94 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc4_select', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc5_anim',
-            frames: this.anims.generateFrameNumbers('npc5', { start: 0, end: 80 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc5', { start: 0, end: 45 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc5_select_anim',
-            frames: this.anims.generateFrameNumbers('npc5_select', { start: 0, end: 80 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc5_select', { start: 0, end: 45 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc6_anim',
-            frames: this.anims.generateFrameNumbers('npc6', { start: 0, end: 94 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc6', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc6_select_anim',
-            frames: this.anims.generateFrameNumbers('npc6_select', { start: 0, end: 94 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc6_select', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc7_anim',
-            frames: this.anims.generateFrameNumbers('npc7', { start: 0, end: 94 }),
-            frameRate: 30,
+            frames: this.anims.generateFrameNumbers('npc7', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc7_select_anim',
-            frames: this.anims.generateFrameNumbers('npc7_select', { start: 0, end: 94 }),
-            frameRate: 0,
+            frames: this.anims.generateFrameNumbers('npc7_select', { start: 0, end: 29 }),
+            frameRate: 18,
             repeat: -1
         });
 
@@ -670,7 +670,7 @@ export class MainStreetScene extends Phaser.Scene {
 
         this.anims.create({
             key: 'boy_left_talk_anim',
-            frames: this.anims.generateFrameNumbers('boy_left_talk', { start: 0, end: 168 }),
+            frames: this.anims.generateFrameNumbers('boy_left_talk', { start: 0, end: 194 }),
             frameRate: 24,
             repeat: -1
         });
