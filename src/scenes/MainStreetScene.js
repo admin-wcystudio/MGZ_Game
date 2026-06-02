@@ -272,7 +272,7 @@ export class MainStreetScene extends Phaser.Scene {
         // NPCs (trigger game)
         this.interactiveNpcs = [];
 
-        const n1 = NpcHelper.createNpc(this, 1, 1200, 650, 1, 'npc1', npc1_bubbles, 6, 'npc1_anim');
+        const n1 = NpcHelper.createNpc(this, 1, 1200, 500, 1, 'npc1', npc1_bubbles, 6, 'npc1_anim');
         const n2 = NpcHelper.createNpc(this, 2, 3200, 550, 1, 'npc2', npc2_bubbles, 6, 'npc2_anim');
         const n3 = NpcHelper.createNpc(this, 3, 1650, 550, 1, 'npc3', npc3_bubbles, 6, 'npc3_anim');
         const n4 = NpcHelper.createNpc(this, 4, 3750, 750, 1, 'npc4', npc4_bubbles, 6, 'npc4_anim');
@@ -417,19 +417,15 @@ export class MainStreetScene extends Phaser.Scene {
     }
 
     handleAnimation(gender, isMoving, isLeft) {
-        let walkKey = `${gender}_left_walk_anim`;
         let idleKey = `${gender}_idle_anim`;
 
         if (isMoving) {
-            // true means: if 'walkKey' is already playing, don't restart it
+            let walkKey = isLeft ? `${gender}_left_walk_anim` : `${gender}_right_walk_anim`;
             this.playerSprite.play(walkKey, true);
-            if (!isLeft) {
-                this.playerSprite.setFlipX(true);
-            } else {
-                this.playerSprite.setFlipX(false);
-            }
+            this.playerSprite.setFlipX(false);
         } else {
             this.playerSprite.play(idleKey, true);
+            this.playerSprite.setFlipX(false);
         }
     }
 
