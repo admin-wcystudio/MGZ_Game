@@ -181,6 +181,12 @@ export class MainStreetScene extends Phaser.Scene {
         if (this.sound.getAll('bgm').length === 0) {
             this.sound.play('bgm', { loop: true, volume: 0.5 });
         }
+
+        this.input.on('pointerup', () => {
+            this.isLeftDown = false;
+            this.isRightDown = false;
+        });
+
         // Create NPC animations
         this.createAnimations();
 
@@ -239,7 +245,7 @@ export class MainStreetScene extends Phaser.Scene {
         this.isRightDown = false;
         this.isTalking = false;
 
-        this.btnLeft = new CustomButton(this, 150, height / 2, 'prev_button', 'prev_button_click',
+        this.btnLeft = new CustomButton(this, 150, height / 2 + 100, 'prev_button', 'prev_button_click',
             () => {
                 this.isLeftDown = true;
                 this.handleAnimation(genderKey, true, true);
@@ -250,7 +256,7 @@ export class MainStreetScene extends Phaser.Scene {
             }
         ).setScrollFactor(0).setDepth(100);
 
-        this.btnRight = new CustomButton(this, width - 150, height / 2, 'next_button', 'next_button_click',
+        this.btnRight = new CustomButton(this, width - 150, height / 2 + 100, 'next_button', 'next_button_click',
             () => {
                 this.isRightDown = true;
                 this.handleAnimation(genderKey, true, false);
@@ -261,6 +267,17 @@ export class MainStreetScene extends Phaser.Scene {
             }
         ).setScrollFactor(0).setDepth(100);
 
+        // Stop movement if pointer leaves the game window
+        this.input.on('pointerout', () => {
+            if (this.isLeftDown) {
+                this.isLeftDown = false;
+                this.handleAnimation(genderKey, false, true);
+            }
+            if (this.isRightDown) {
+                this.isRightDown = false;
+                this.handleAnimation(genderKey, false, false);
+            }
+        });
 
         this.bubbleTimers = [];
         const npc1_bubbles = ['npc1_bubble_1'];
@@ -399,18 +416,21 @@ export class MainStreetScene extends Phaser.Scene {
     }
 
     handleAnimation(gender, isMoving, isLeft) {
+        let walkKey = `${gender}_left_walk_anim`;
         let idleKey = `${gender}_idle_anim`;
 
         if (isMoving) {
-            let walkKey = isLeft ? `${gender}_left_walk_anim` : `${gender}_right_walk_anim`;
+            // true means: if 'walkKey' is already playing, don't restart it
             this.playerSprite.play(walkKey, true);
-            this.playerSprite.setFlipX(false);
+            if (!isLeft) {
+                this.playerSprite.setFlipX(true);
+            } else {
+                this.playerSprite.setFlipX(false);
+            }
         } else {
             this.playerSprite.play(idleKey, true);
-            this.playerSprite.setFlipX(false);
         }
     }
-
     switchTalkingAnimation(gender, isLeft) {
         if (isLeft === undefined) isLeft = this.playerSprite.lastDirectionLeft;
         let talkKey = isLeft ? `${gender}_left_talk_anim` : `${gender}_right_talk_anim`;
