@@ -12,61 +12,63 @@ export class MainStreetScene extends Phaser.Scene {
     preload() {
 
         // Create loading bar UI
-        // const width = this.cameras.main.width;
-        // const height = this.cameras.main.height;
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
 
-        // // Loading bar background
-        // const barBg = this.add.rectangle(width / 2, height / 2, 400, 30, 0x222222);
-        // barBg.setStrokeStyle(2, 0xffffff);
+        // Loading bar background
+        const barBg = this.add.rectangle(width / 2, height / 2, 400, 30, 0x222222);
+        barBg.setStrokeStyle(2, 0xffffff);
 
-        // // Loading bar fill
-        // const barFill = this.add.rectangle(width / 2 - 195, height / 2, 0, 22, 0x00ff00);
-        // barFill.setOrigin(0, 0.5);
+        // Loading bar fill
+        const barFill = this.add.rectangle(width / 2 - 195, height / 2, 0, 22, 0x00ff00);
+        barFill.setOrigin(0, 0.5);
 
-        // // Loading text
-        // const loadingText = this.add.text(width / 2, height / 2 - 50, '載入中...', {
-        //     fontSize: '24px',
-        //     fontFamily: 'Arial',
-        //     color: '#ffffff'
-        // }).setOrigin(0.5);
+        // Loading text
+        const loadingText = this.add.text(width / 2, height / 2 - 50, '載入中...', {
+            fontSize: '24px',
+            fontFamily: 'Arial',
+            color: '#ffffff'
+        }).setOrigin(0.5);
 
-        // // Percentage text
-        // const percentText = this.add.text(width / 2, height / 2 + 50, '0%', {
-        //     fontSize: '20px',
-        //     fontFamily: 'Arial',
-        //     color: '#ffffff'
-        // }).setOrigin(0.5);
+        // Percentage text
+        const percentText = this.add.text(width / 2, height / 2 + 50, '0%', {
+            fontSize: '20px',
+            fontFamily: 'Arial',
+            color: '#ffffff'
+        }).setOrigin(0.5);
 
-        // // Update progress bar on load progress
-        // this.load.on('progress', (value) => {
-        //     barFill.width = 390 * value;
-        //     percentText.setText(Math.round(value * 100) + '%');
-        // });
+        // Update progress bar on load progress
+        this.load.on('progress', (value) => {
+            barFill.width = 390 * value;
+            percentText.setText(Math.round(value * 100) + '%');
+        });
 
-        // // Minimum wait time in ms (30 seconds)
-        // const minWaitTime = 30000;
-        // const startTime = Date.now();
-        // let isAssetsLoaded = false;
+        // Minimum wait time in ms (30 seconds)
+        const minWaitTime = 30000;
+        const startTime = Date.now();
+        let isAssetsLoaded = false;
 
-        // const checkLoadingComplete = () => {
-        //     const elapsedTime = Date.now() - startTime;
-        //     if (isAssetsLoaded && elapsedTime >= minWaitTime) {
-        //         barBg.destroy();
-        //         barFill.destroy();
-        //         loadingText.destroy();
-        //         percentText.destroy();
-        //     } else if (isAssetsLoaded) {
-        //         // If assets loaded but time hasn't passed, check again later
-        //         const remainingTime = minWaitTime - elapsedTime;
-        //         this.time.delayedCall(remainingTime, checkLoadingComplete, [], this);
-        //     }
-        // };
+        const checkLoadingComplete = () => {
+            const elapsedTime = Date.now() - startTime;
+            if (isAssetsLoaded && elapsedTime >= minWaitTime) {
+                barBg.destroy();
+                barFill.destroy();
+                loadingText.destroy();
+                percentText.destroy();
+            } else if (isAssetsLoaded) {
+                // If assets loaded but time hasn't passed, check again later
+                const remainingTime = minWaitTime - elapsedTime;
+                this.time.delayedCall(remainingTime, checkLoadingComplete, [], this);
+            }
+        };
 
-        // // Clean up when loading complete
-        // this.load.on('complete', () => {
-        //     isAssetsLoaded = true;
-        //     checkLoadingComplete();
-        // });
+        // Clean up when loading complete
+        this.load.on('complete', () => {
+            isAssetsLoaded = true;
+            checkLoadingComplete();
+        });
+
+        this.load.audio('bgm', 'assets/music/bgm.mp3');
         //main street backgrounds
         this.load.image('stage1', 'assets/images/MainStreet/stage1.png');
         this.load.image('stage2', 'assets/images/MainStreet/stage2.png');
@@ -176,6 +178,9 @@ export class MainStreetScene extends Phaser.Scene {
     }
 
     create() {
+        if (this.sound.getAll('bgm').length === 0) {
+            this.sound.play('bgm', { loop: true, volume: 0.5 });
+        }
         // Create NPC animations
         this.createAnimations();
 
@@ -217,17 +222,17 @@ export class MainStreetScene extends Phaser.Scene {
         ]
 
         const ui = UIHelper.createGameCommonUI(this, null, introPage, 0);
-        // ui.descriptionPanel.setVisible(true);
+        ui.descriptionPanel.setVisible(true);
 
         // Check if intro has been seen in this session
-        // const hasSeenIntro = sessionStorage.getItem('hasSeenMainStreetIntro');
-        // if (hasSeenIntro) {
-        //     if (ui && ui.descriptionPanel) {
-        //         ui.descriptionPanel.setVisible(false);
-        //     }
-        // } else {
-        //     sessionStorage.setItem('hasSeenMainStreetIntro', 'true');
-        // }
+        const hasSeenIntro = sessionStorage.getItem('hasSeenMainStreetIntro');
+        if (hasSeenIntro) {
+            if (ui && ui.descriptionPanel) {
+                ui.descriptionPanel.setVisible(false);
+            }
+        } else {
+            sessionStorage.setItem('hasSeenMainStreetIntro', 'true');
+        }
 
         //buttons
         this.isLeftDown = false;
@@ -489,84 +494,84 @@ export class MainStreetScene extends Phaser.Scene {
         this.anims.create({
             key: 'npc1_anim',
             frames: this.anims.generateFrameNumbers('npc1', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc1_select_anim',
             frames: this.anims.generateFrameNumbers('npc1_select', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc2_anim',
             frames: this.anims.generateFrameNumbers('npc2', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc2_select_anim',
             frames: this.anims.generateFrameNumbers('npc2_select', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc3_anim',
             frames: this.anims.generateFrameNumbers('npc3', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc3_select_anim',
             frames: this.anims.generateFrameNumbers('npc3_select', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc4_anim',
             frames: this.anims.generateFrameNumbers('npc4', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc4_select_anim',
             frames: this.anims.generateFrameNumbers('npc4_select', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc5_anim',
             frames: this.anims.generateFrameNumbers('npc5', { start: 0, end: 45 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc5_select_anim',
             frames: this.anims.generateFrameNumbers('npc5_select', { start: 0, end: 45 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc6_anim',
             frames: this.anims.generateFrameNumbers('npc6', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc6_select_anim',
             frames: this.anims.generateFrameNumbers('npc6_select', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 
@@ -580,7 +585,7 @@ export class MainStreetScene extends Phaser.Scene {
         this.anims.create({
             key: 'npc7_select_anim',
             frames: this.anims.generateFrameNumbers('npc7_select', { start: 0, end: 29 }),
-            frameRate: 18,
+            frameRate: 15,
             repeat: -1
         });
 

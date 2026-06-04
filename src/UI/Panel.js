@@ -260,6 +260,18 @@ export class ItemsPanel extends Phaser.GameObjects.Container {
                 itemSelectKey: 'itempage_item4_select',
                 itemDescriptionKey: 'game4_object_description'
             },
+
+            {
+                itemKey: 'itempage_item5',
+                itemSelectKey: 'itempage_item5_select',
+                itemDescriptionKey: 'game5_object_description'
+            },
+
+            {
+                itemKey: 'itempage_item6',
+                itemSelectKey: 'itempage_item6_select',
+                itemDescriptionKey: 'game6_object_description'
+            },
             {
                 itemKey: 'itempage_item_box'
             }
@@ -274,15 +286,24 @@ export class ItemsPanel extends Phaser.GameObjects.Container {
         const savedGameResultData = localStorage.getItem('allGamesResult');
         const allResults = savedGameResultData ? JSON.parse(savedGameResultData) : [];
 
-        // 2. 產生物品按鈕
-        itemsContent.forEach((item, index) => {
-            const posX = -500 + index * 250; // 調整為 Container 相對座標
-            const posY = -100;
+        // 2. 產生物品按鈕 (5 cols x 2 rows grid)
+        const cols = 5;
+        const rowYs = [-100, 200];
+        const colXs = [-500, -250, 0, 250, 500];
 
-            // Always show the box for Top Row (y=-100) and Bottom Row (y=200)
-            const itemBoxTop = scene.add.image(posX, posY, 'itempage_item_box').setDepth(3).setScrollFactor(0);
-            const itemBoxBottom = scene.add.image(posX, 200, 'itempage_item_box').setDepth(3).setScrollFactor(0);
-            this.add([itemBoxTop, itemBoxBottom]);
+        // Draw all empty boxes for the full 2x5 grid
+        rowYs.forEach(rowY => {
+            colXs.forEach(colX => {
+                const box = scene.add.image(colX, rowY, 'itempage_item_box').setDepth(3).setScrollFactor(0);
+                this.add(box);
+            });
+        });
+
+        itemsContent.forEach((item, index) => {
+            const col = index % cols;
+            const row = Math.floor(index / cols);
+            const posX = colXs[col];
+            const posY = rowYs[row];
 
             // Check if corresponding game (index + 1) is completed
             const gameId = index + 1;

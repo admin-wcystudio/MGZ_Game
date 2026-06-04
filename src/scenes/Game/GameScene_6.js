@@ -60,7 +60,7 @@ export class GameScene_6 extends BaseGameScene {
             sceneIndex: 6
         });
 
-        // this.gameUI.descriptionPanel.setVisible(false);
+        //this.gameUI.descriptionPanel.setVisible(false);
 
         // Create confirm button
         this.confirmBtn = new CustomButton(this, this.centerX, this.height - 100,
@@ -99,13 +99,13 @@ export class GameScene_6 extends BaseGameScene {
 
         const spawnPositions = [
             { x: this.centerX - 780, y: this.centerY - 200 },
-            { x: this.centerX - 600, y: this.centerY + 380 },
+            { x: this.centerX - 600, y: this.centerY + 320 },
             { x: this.centerX + 600, y: this.centerY + 320 },
-            { x: this.centerX + 200, y: this.centerY + 380 },
-            { x: this.centerX - 200, y: this.centerY + 320 },
+            { x: this.centerX + 300, y: this.centerY + 380 },
+            { x: this.centerX - 300, y: this.centerY + 380 },
             { x: this.centerX + 780, y: this.centerY - 200 },
-            { x: this.centerX - 780, y: this.centerY + 200 },
-            { x: this.centerX + 780, y: this.centerY + 200 }
+            { x: this.centerX - 780, y: this.centerY + 100 },
+            { x: this.centerX + 780, y: this.centerY + 100 }
         ];
 
 
@@ -148,7 +148,7 @@ export class GameScene_6 extends BaseGameScene {
                     }
                 });
             } else {
-                console.log(`[SNAP] No snap position found within ${this.snapRadius}px radius`);
+                //console.log(`[SNAP] No snap position found within ${this.snapRadius}px radius`);
             }
         });
 
@@ -196,13 +196,13 @@ export class GameScene_6 extends BaseGameScene {
             nearestPos.isOccupied = true;
 
             // Debug log for snap positions
-            if (nearestIndex >= 0 && nearestIndex <= 1) {
-                console.log(`[SNAP] Object ${gameObject.objectId} snapped to snapPosition[${nearestIndex}] at border1`);
-            } else if (nearestIndex >= 2 && nearestIndex <= 3) {
-                console.log(`[SNAP] Object ${gameObject.objectId} snapped to snapPosition[${nearestIndex}] at border2`);
-            } else if (nearestIndex >= 4 && nearestIndex <= 5) {
-                console.log(`[SNAP] Object ${gameObject.objectId} snapped to snapPosition[${nearestIndex}] at border3`);
-            }
+            // if (nearestIndex >= 0 && nearestIndex <= 1) {
+            //     console.log(`[SNAP] Object ${gameObject.objectId} snapped to snapPosition[${nearestIndex}] at border1`);
+            // } else if (nearestIndex >= 2 && nearestIndex <= 3) {
+            //     console.log(`[SNAP] Object ${gameObject.objectId} snapped to snapPosition[${nearestIndex}] at border2`);
+            // } else if (nearestIndex >= 4 && nearestIndex <= 5) {
+            //     console.log(`[SNAP] Object ${gameObject.objectId} snapped to snapPosition[${nearestIndex}] at border3`);
+            // }
         }
 
         return { snapPos: nearestPos, index: nearestIndex };
@@ -212,11 +212,11 @@ export class GameScene_6 extends BaseGameScene {
         const allPositions = [0, 1, 2, 3, 4, 5, 6, 7];
         const allOccupied = allPositions.every(i => this.positionObjects.hasOwnProperty(i));
 
-        if (allOccupied) {
-            console.log('[CHECK] All 8 positions occupied!');
-            console.log('[CHECK] Current positions:', this.positionObjects);
-            console.log('[CHECK] Click confirm button to check answer');
-        }
+        // if (allOccupied) {
+        //     console.log('[CHECK] All 8 positions occupied!');
+        //     console.log('[CHECK] Current positions:', this.positionObjects);
+        //     console.log('[CHECK] Click confirm button to check answer');
+        // }
     }
 
     enableGameInteraction(enable) {
@@ -224,17 +224,17 @@ export class GameScene_6 extends BaseGameScene {
             obj.setVisible(enable);
             obj.setInteractive(enable);
             if (enable) {
-                console.log(`[INTERACTION] Object ${obj.objectId} at (${Math.round(obj.x)}, ${Math.round(obj.y)}) - visible: ${obj.visible}, interactive: ${obj.input ? obj.input.enabled : 'no input'}`);
+                //console.log(`[INTERACTION] Object ${obj.objectId} at (${Math.round(obj.x)}, ${Math.round(obj.y)}) - visible: ${obj.visible}, interactive: ${obj.input ? obj.input.enabled : 'no input'}`);
             }
         });
         if (this.confirmBtn) {
             this.confirmBtn.setVisible(enable);
-            console.log(`[INTERACTION] Confirm button visibility: ${enable}`);
+            // console.log(`[INTERACTION] Confirm button visibility: ${enable}`);
         }
     }
 
     checkAnswer() {
-        console.log('[ANSWER] Checking answer...');
+        // console.log('[ANSWER] Checking answer...');
 
         const leftObjects = [0, 1, 2, 3].map(i => this.positionObjects[i]).filter(id => id !== undefined);
         const rightObjects = [4, 5, 6, 7].map(i => this.positionObjects[i]).filter(id => id !== undefined);
@@ -245,10 +245,10 @@ export class GameScene_6 extends BaseGameScene {
             rightObjects.length === this.rightCorrectObjects.length;
 
         if (leftCorrect && rightCorrect) {
-            console.log('[ANSWER] ✓ All objects correctly placed!');
+            //console.log('[ANSWER] ✓ All objects correctly placed!');
             this.onRoundWin();
         } else {
-            console.log('[ANSWER] ✗ Incorrect placement!');
+            //console.log('[ANSWER] ✗ Incorrect placement!');
             this.handleLose();
         }
     }
