@@ -24,6 +24,8 @@ export class GameScene_7 extends BaseGameScene {
         this.load.image('game7_confirm_button', `${path}game7_confirm_button.png`);
         this.load.image('game7_confirm_button_select', `${path}game7_confirm_button_select.png`);
 
+        this.load.image('game7_final_preview', `${path}game7_final_preview.png`);
+
         for (let i = 1; i <= 3; i++) {
             this.load.image(`game7_q${i}`, `${path}game7_q${i}_box1.png`);
             this.load.image(`game7_q${i}_bg`, `${path}game7_q${i}_box2.png`);
@@ -149,7 +151,12 @@ export class GameScene_7 extends BaseGameScene {
     }
 
     showWin() {
-        GameManager.switchToGameScene(this, 'GameResultScene');
+        this.winPreview = this.add.image(960, 540, 'game7_final_preview').setDepth(2000).setVisible(true)
+            .setInteractive({ useHandCursor: true });
+        this.winPreview.on('pointerdown', () => {
+            this.winPreview.destroy();
+            GameManager.switchToGameScene(this, 'GameResultScene');
+        });
     }
 
 
