@@ -84,6 +84,14 @@ export class CustomPanel extends BasePanel {
         this.refresh();
     }
 
+    setNextBtnPosition(x, y) {
+        this.nextBtn.setPosition(570 + x, 260 + y);
+    }
+
+    setPrevBtnPosition(x, y) {
+        this.prevBtn.setPosition(-570 + x, 260 + y);
+    }
+
     setCloseCallBack(callback) {
         this.customCloseCallback = callback;
     }
@@ -247,7 +255,8 @@ export class ItemsPanel extends Phaser.GameObjects.Container {
             {
                 itemKey: 'itempage_item2',
                 itemSelectKey: 'itempage_item2_select',
-                itemDescriptionKey: 'game2_object_description'
+                itemDescriptionKey: 'game2_object_description1',
+                itemDescriptionKey1: 'game2_object_description2'
             },
 
             {
@@ -321,6 +330,10 @@ export class ItemsPanel extends Phaser.GameObjects.Container {
                         const blocker = scene.add.rectangle(0, 0, 1920, 1080, 0x000000, 0.5).setInteractive().setScrollFactor(0);
 
                         const descPanel = new CustomPanel(scene, 0, 0, pages);
+                        if (gameId === 2) {
+                            descPanel.setNextBtnPosition(0, 50);
+                            descPanel.setPrevBtnPosition(0, 50);
+                        }
                         descPanel.setCloseCallBack(() => {
                             blocker.destroy();
                             this.activeDescPanel = null;

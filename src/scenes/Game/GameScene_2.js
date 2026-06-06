@@ -113,7 +113,6 @@ export class GameScene_2 extends BaseGameScene {
 
     create() {
         this.createAnimations();
-
         // Movement settings
         this.moveStep = 58;  // Pixels per move
         this.isMoving = false;
@@ -214,7 +213,7 @@ export class GameScene_2 extends BaseGameScene {
         // Interior walls
         this.createWall(800 - 5, 460, 260, 190, debugVisible, true);
         this.createWall(this.centerX - 520, this.centerY + 130, 250, 240, debugVisible, true);
-        this.createWall(this.centerX - 430, this.centerY + 75, 430, 160, debugVisible, true);
+        this.createWall(this.centerX - 430, this.centerY + 90, 430, 150, debugVisible, true);
 
         //start left
         this.createWall(this.centerX - 170, this.centerY + 330, 250, 150, debugVisible, true);
@@ -340,10 +339,11 @@ export class GameScene_2 extends BaseGameScene {
 
     /** Check collision with fail objects using distance */
     checkFailCollision() {
-        const hitRadius = 50;
+        const hitRadius = 60;
+        const feetY = this.player.y + 70;
         for (const failObj of this.failObjects) {
             if (!failObj.visible) continue;
-            const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, failObj.x, failObj.y);
+            const dist = Phaser.Math.Distance.Between(this.player.x, feetY, failObj.x, failObj.y);
             if (dist < hitRadius) {
                 failObj.setVisible(false);
                 this.collectedFailObjects++;
@@ -360,10 +360,11 @@ export class GameScene_2 extends BaseGameScene {
 
     /** Check collection of success objects using distance */
     checkSuccessCollection() {
-        const pickupRadius = 50;
+        const pickupRadius = 60;
+        const feetY = this.player.y + 70;
         for (const successObj of this.successObjects) {
             if (!successObj.visible) continue;
-            const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, successObj.x, successObj.y);
+            const dist = Phaser.Math.Distance.Between(this.player.x, feetY, successObj.x, successObj.y);
             if (dist < pickupRadius) {
                 successObj.setVisible(false);
                 this.collectedSuccessObjects++;
@@ -524,9 +525,17 @@ export class GameScene_2 extends BaseGameScene {
 
     showObjectPanel() {
         const objectPanel = new CustomPanel(this, 960, 600, [
-            { content: 'game2_object_description1', closeBtn: 'close_btn', closeBtnClick: 'close_btn_click' },
-            { content: 'game2_object_description2', closeBtn: 'close_btn', closeBtnClick: 'close_btn_click' }
+            {
+                content: 'game2_object_description1',
+                closeBtn: 'close_btn', closeBtnClick: 'close_btn_click'
+            },
+            {
+                content: 'game2_object_description2',
+                closeBtn: 'close_btn', closeBtnClick: 'close_btn_click'
+            }
         ]);
+        objectPanel.setNextBtnPosition(0, 50);
+        objectPanel.setPrevBtnPosition(0, 50);
         objectPanel.setDepth(1000);
         objectPanel.show();
         objectPanel.setCloseCallBack(() => GameManager.backToMainStreet(this));
