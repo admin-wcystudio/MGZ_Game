@@ -302,7 +302,6 @@ export class GameScene_6 extends BaseGameScene {
                 this.win_03.once('pointerdown', () => {
                     this.win_03.destroy();
                     super.onWinBubbleClose();
-                    this.showObjectPanel();
                 });
             });
         });
