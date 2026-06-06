@@ -124,6 +124,7 @@ export class BootScene extends Phaser.Scene {
 
         // load game bg
         for (let i = 1; i <= 7; i++) {
+            if (i === 2) continue; // skip game 2 description as it is not used
             this.load.image(`game${i}_description`, `assets/images/Game_${i}/game${i}_description.png`);// skip game 5 bg as it is not used
             this.load.image(`game${i}_bg`, `assets/images/Game_${i}/game${i}_bg.png`);
         }

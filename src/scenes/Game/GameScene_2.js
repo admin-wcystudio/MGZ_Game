@@ -15,7 +15,7 @@ export class GameScene_2 extends BaseGameScene {
         this.centerX = this.width / 2;
         this.centerY = this.height / 2;
 
-        this.gender = 'M';
+        this.gender = 'F';
         if (localStorage.getItem('player')) {
             this.gender = JSON.parse(localStorage.getItem('player')).gender;
         }
@@ -24,7 +24,7 @@ export class GameScene_2 extends BaseGameScene {
 
         this.load.image('game2_npc_box_mainstreet', `${path}game2_npc_box1.png`);
 
-        if (this.gender === 'M') {
+        if (this.gender === '') {
             this.load.image('game2_npc_box_mainstreet_01', `${path}game2_npc_box2_boy.png`);
             this.load.image('game2_npc_box_mainstreet_02', `${path}game2_npc_box3_boy.png`);
         } else {
@@ -648,8 +648,8 @@ export class GameScene_2 extends BaseGameScene {
             });
             this.anims.create({
                 key: 'girl_rightwalking_anim',
-                frames: this.anims.generateFrameNumbers('girl_rightwalking', { start: 0, end: 66 }),
-                frameRate: 24,
+                frames: this.anims.generateFrameNumbers('girl_rightwalking', { start: 16, end: 47 }),
+                frameRate: 30,
                 repeat: -1
             });
         }
