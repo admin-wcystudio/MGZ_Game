@@ -523,11 +523,10 @@ export class GameScene_2 extends BaseGameScene {
     }
 
     showObjectPanel() {
-        const objectPanel = new CustomPanel(this, 960, 600, [{
-            content: ['game2_object_description1', 'game2_object_description2'],
-            closeBtn: 'close_btn',
-            closeBtnClick: 'close_btn_click'
-        }]);
+        const objectPanel = new CustomPanel(this, 960, 600, [
+            { content: 'game2_object_description1', closeBtn: 'close_btn', closeBtnClick: 'close_btn_click' },
+            { content: 'game2_object_description2', closeBtn: 'close_btn', closeBtnClick: 'close_btn_click' }
+        ]);
         objectPanel.setDepth(1000);
         objectPanel.show();
         objectPanel.setCloseCallBack(() => GameManager.backToMainStreet(this));
