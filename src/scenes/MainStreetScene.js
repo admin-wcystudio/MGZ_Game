@@ -516,84 +516,84 @@ export class MainStreetScene extends Phaser.Scene {
         this.anims.create({
             key: 'npc1_anim',
             frames: this.anims.generateFrameNumbers('npc1', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc1_select_anim',
             frames: this.anims.generateFrameNumbers('npc1_select', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc2_anim',
             frames: this.anims.generateFrameNumbers('npc2', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc2_select_anim',
             frames: this.anims.generateFrameNumbers('npc2_select', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc3_anim',
             frames: this.anims.generateFrameNumbers('npc3', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc3_select_anim',
             frames: this.anims.generateFrameNumbers('npc3_select', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc4_anim',
             frames: this.anims.generateFrameNumbers('npc4', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc4_select_anim',
             frames: this.anims.generateFrameNumbers('npc4_select', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc5_anim',
             frames: this.anims.generateFrameNumbers('npc5', { start: 0, end: 45 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc5_select_anim',
             frames: this.anims.generateFrameNumbers('npc5_select', { start: 0, end: 45 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc6_anim',
             frames: this.anims.generateFrameNumbers('npc6', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
         this.anims.create({
             key: 'npc6_select_anim',
             frames: this.anims.generateFrameNumbers('npc6_select', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 
@@ -607,7 +607,7 @@ export class MainStreetScene extends Phaser.Scene {
         this.anims.create({
             key: 'npc7_select_anim',
             frames: this.anims.generateFrameNumbers('npc7_select', { start: 0, end: 29 }),
-            frameRate: 15,
+            frameRate: 12,
             repeat: -1
         });
 

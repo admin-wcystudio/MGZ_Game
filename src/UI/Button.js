@@ -14,6 +14,8 @@ class BaseButton extends Phaser.GameObjects.Image {
         // Configuration
         this.isClicked = false;     // Used for toggle mode
         this.needClicked = false;   // If true, behaves like a checkbox/toggle
+        this.isHeldDown = false;    // Track if button is actively being pressed
+        this.locked = false;
         this.sfx = null;            // Placeholder for click sounds
 
         // Add to scene and enable input
@@ -21,6 +23,12 @@ class BaseButton extends Phaser.GameObjects.Image {
         this.setInteractive({ useHandCursor: true });
 
         this.setupEvents();
+    }
+
+    init() {
+        this.isClicked = false;
+        this.isHeldDown = false;
+        this.setNormalState();
     }
 
     setupEvents() {
@@ -31,9 +39,10 @@ class BaseButton extends Phaser.GameObjects.Image {
     }
 
     handleDown() {
-        if (!this.input?.enabled) return;
+        if (this.locked || !this.input?.enabled) return;
 
         this.playButtonClick();
+        this.isHeldDown = true;
 
         if (this.needClicked) {
             this.isClicked = !this.isClicked;
@@ -51,7 +60,8 @@ class BaseButton extends Phaser.GameObjects.Image {
     }
 
     handleUp() {
-        if (!this.input?.enabled) return;
+        if (this.locked || !this.input?.enabled) return;
+        this.isHeldDown = false;
         if (!this.needClicked) {
             this.setNormalState();
             this.cbUp();
@@ -59,7 +69,10 @@ class BaseButton extends Phaser.GameObjects.Image {
     }
 
     handleOver() {
-        if (!this.input?.enabled || this.isClicked) return;
+        if (this.locked || !this.input?.enabled || this.isClicked) return;
+
+        this.setPressedState();
+
         // Subtle hover effect: scale up slightly
         this.scene.tweens.add({
             targets: this,
@@ -69,14 +82,20 @@ class BaseButton extends Phaser.GameObjects.Image {
     }
 
     handleOut() {
-        if (!this.input?.enabled) return;
+        if (this.locked || !this.input?.enabled) return;
         if (!this.isClicked) {
             this.setNormalState();
+
+            if (!this.needClicked && this.isHeldDown) {
+                this.isHeldDown = false;
+                this.cbUp();
+            }
         }
     }
-
     setPressedState() {
         if (this.pressedKey) this.setTexture(this.pressedKey);
+
+
 
         // Haptic feel: shrink slightly when pressed
         this.scene.tweens.add({
@@ -94,6 +113,12 @@ class BaseButton extends Phaser.GameObjects.Image {
             scale: 1,
             duration: 100
         });
+    }
+
+    setLocked(isLocked) {
+        this.locked = isLocked;
+        if (isLocked) this.disableInteractive();
+        else this.setInteractive({ useHandCursor: true });
     }
 
     setActive(canEnable) {
@@ -140,5 +165,13 @@ export class CustomButton2 extends BaseButton {
     handleOut() {
         // Override: Keep it simple
         if (!this.isClicked) this.setNormalState();
+    }
+    setPressedState() {
+        if (this.pressedKey) this.setTexture(this.pressedKey);
+        this.setScale(0.95);
+    }
+    setNormalState() {
+        if (this.normalKey) this.setTexture(this.normalKey);
+        this.setScale(1);
     }
 }
