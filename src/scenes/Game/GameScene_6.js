@@ -2,6 +2,7 @@ import BaseGameScene from './BaseGameScene.js';
 import { CustomButton } from '../../UI/Button.js';
 import { CustomPanel, CustomFailPanel } from '../../UI/Panel.js';
 import GameManager from '../GameManager.js';
+import VoiceOverHelper from '../../Audio/VoiceOverHelper.js';
 
 
 export class GameScene_6 extends BaseGameScene {
@@ -11,6 +12,7 @@ export class GameScene_6 extends BaseGameScene {
 
     preload() {
         const path = 'assets/images/Game_6/';
+        VoiceOverHelper.preload(this);
         const player = JSON.parse(localStorage.getItem('player') || '{"gender":"M"}');
         this.genderKey = player.gender === 'M' ? 'boy' : 'girl';
 
@@ -290,16 +292,20 @@ export class GameScene_6 extends BaseGameScene {
 
         this.win_01 = this.add.image(centerX, centerY, 'game6_npc_box_win_01')
             .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+        VoiceOverHelper.playBubbleVo(this, 'game6_npc_box_win_01');
 
         this.win_01.once('pointerdown', () => {
             this.win_01.destroy();
             this.win_02 = this.add.image(centerX, centerY, 'game6_npc_box_win_02')
                 .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+            VoiceOverHelper.playBubbleVo(this, 'game6_npc_box_win_02');
             this.win_02.once('pointerdown', () => {
                 this.win_02.destroy();
                 this.win_03 = this.add.image(centerX, centerY, 'game6_npc_box_win_03')
                     .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+                VoiceOverHelper.playBubbleVo(this, 'game6_npc_box_win_03');
                 this.win_03.once('pointerdown', () => {
+                    VoiceOverHelper.stop(this);
                     this.win_03.destroy();
                     super.onWinBubbleClose();
                     this.showObjectPanel();

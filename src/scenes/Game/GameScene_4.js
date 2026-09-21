@@ -2,6 +2,7 @@ import BaseGameScene from './BaseGameScene.js';
 import { CustomButton } from '../../UI/Button.js';
 import { CustomPanel, CustomFailPanel } from '../../UI/Panel.js';
 import GameManager from '../GameManager.js';
+import VoiceOverHelper from '../../Audio/VoiceOverHelper.js';
 
 
 export class GameScene_4 extends BaseGameScene {
@@ -11,6 +12,7 @@ export class GameScene_4 extends BaseGameScene {
 
     preload() {
         const path = 'assets/images/Game_4/';
+        VoiceOverHelper.preload(this);
 
         this.width = this.cameras.main.width;
         this.height = this.cameras.main.height;
@@ -259,25 +261,30 @@ export class GameScene_4 extends BaseGameScene {
 
         this.win_02 = this.add.image(centerX, centerY, 'game4_npc_box_win_02')
             .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+        VoiceOverHelper.playBubbleVo(this, 'game4_npc_box_win_02');
         this.win_02.once('pointerdown', () => {
             this.win_02.destroy();
             this.win_02 = null;
 
             this.win_03 = this.add.image(centerX, centerY, 'game4_npc_box_win_03')
                 .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+            VoiceOverHelper.playBubbleVo(this, 'game4_npc_box_win_03');
             this.win_03.once('pointerdown', () => {
                 this.win_03.destroy();
                 this.win_03 = null;
 
                 this.win_04 = this.add.image(centerX, centerY, 'game4_npc_box_win_04')
                     .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+                VoiceOverHelper.playBubbleVo(this, 'game4_npc_box_win_04');
                 this.win_04.once('pointerdown', () => {
                     this.win_04.destroy();
                     this.win_04 = null;
 
                     this.win_05 = this.add.image(centerX, centerY, 'game4_npc_box_win_05')
                         .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+                    VoiceOverHelper.playBubbleVo(this, 'game4_npc_box_win_05');
                     this.win_05.once('pointerdown', () => {
+                        VoiceOverHelper.stop(this);
                         this.win_05.destroy();
                         this.win_05 = null;
                         super.onWinBubbleClose();

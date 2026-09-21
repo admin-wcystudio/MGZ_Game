@@ -1,6 +1,7 @@
 import { CustomButton } from "../UI/Button.js";
 import UIHelper from "../UI/UIHelper.js";
 import GameManager from "./GameManager.js";
+import VoiceOverHelper from "../Audio/VoiceOverHelper.js";
 
 export class GameResultScene extends Phaser.Scene {
     constructor() {
@@ -39,6 +40,8 @@ export class GameResultScene extends Phaser.Scene {
         this.load.image('program_information_p3', `${path}program_information_p3.png`);
         this.load.image('program_information_p4', `${path}program_information_p4.png`);
 
+        VoiceOverHelper.preload(this);
+
         // Items (1-10)
         for (let i = 1; i <= 10; i++) {
             this.load.image(`finishpage_items${i}`, `${path}finishpage_items${i}.png`);
@@ -46,6 +49,9 @@ export class GameResultScene extends Phaser.Scene {
     }
 
     create() {
+        VoiceOverHelper.ensureBgm(this);
+        this.events.once('shutdown', () => VoiceOverHelper.stop(this));
+
         const centerX = this.cameras.main.width / 2;
         const centerY = this.cameras.main.height / 2;
 
@@ -82,6 +88,9 @@ export class GameResultScene extends Phaser.Scene {
         this.closeButton = new CustomButton(this, 1600, 200, 'finishpage_close_button'
             , 'finishpage_close_button_select', () => {
                 if (this.itemImage == null) return; // Ensure the item has been revealed before allowing to close
+
+                VoiceOverHelper.stop(this, { restoreBgm: false });
+                VoiceOverHelper.stopBgm(this);
 
                 this.takeScreenshot();
 

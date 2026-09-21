@@ -2,6 +2,7 @@ import BaseGameScene from './BaseGameScene.js';
 import { CustomButton } from '../../UI/Button.js';
 import { CustomPanel, CustomFailPanel } from '../../UI/Panel.js';
 import GameManager from '../GameManager.js';
+import VoiceOverHelper from '../../Audio/VoiceOverHelper.js';
 
 export class GameScene_2 extends BaseGameScene {
     constructor() {
@@ -9,6 +10,7 @@ export class GameScene_2 extends BaseGameScene {
     }
     preload() {
         const path = 'assets/images/Game_2/';
+        VoiceOverHelper.preload(this);
 
         this.width = this.cameras.main.width;
         this.height = this.cameras.main.height;
@@ -511,7 +513,9 @@ export class GameScene_2 extends BaseGameScene {
 
         this.win_02 = this.add.image(centerX, centerY, 'game2_npc_box_win_01')
             .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+        VoiceOverHelper.playBubbleVo(this, 'game2_npc_box_win_01');
         this.win_02.once('pointerdown', () => {
+            VoiceOverHelper.stop(this);
             this.win_02.destroy();
             this.win_02 = null;
             super.onWinBubbleClose();
@@ -538,8 +542,10 @@ export class GameScene_2 extends BaseGameScene {
         const centerY = this.cameras.main.height * 0.8;
         this.lose_01 = this.add.image(centerX, centerY, 'game2_npc_box_tryagain_01')
             .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+        VoiceOverHelper.playBubbleVo(this, 'game2_npc_box_tryagain_01');
 
         this.lose_01.on('pointerdown', () => {
+            VoiceOverHelper.stop(this);
             this.lose_01.destroy();
             this.lose_01 = null;
             super.onLoseBubbleClose();

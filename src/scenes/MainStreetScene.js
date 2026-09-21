@@ -3,6 +3,7 @@ import UIHelper from '../UI/UIHelper.js';
 import { CustomPanel, SettingPanel } from '../UI/Panel.js';
 import NpcHelper from '../Character/NpcHelper.js';
 import GameManager from './GameManager.js';
+import VoiceOverHelper from '../Audio/VoiceOverHelper.js';
 
 export class MainStreetScene extends Phaser.Scene {
     constructor() {
@@ -77,37 +78,35 @@ export class MainStreetScene extends Phaser.Scene {
         this.load.image('gameintro_01', 'assets/images/MainStreet/gameintro.png');
         this.load.image('gametimer', 'assets/images/MainStreet/gameintro_timer.png');
 
-        this.load.image('npc1_bubble_1', 'assets/images/Game_1/game1_npc_box1.png');
-        this.load.image('npc2_bubble_1', 'assets/images/Game_2/game2_npc_box1.png');
-        this.load.image('npc2_bubble_4', 'assets/images/Game_2/game2_npc_box4.png');
+        VoiceOverHelper.preload(this);
 
-        this.load.image('npc3_bubble_1', 'assets/images/Game_3/game3_npc_box1.png');
-        this.load.image('npc4_bubble_1', 'assets/images/Game_4/game4_npc_box1.png');
-        this.load.image('npc4_bubble_2', 'assets/images/Game_4/game4_npc_box2.png');
+        this.load.image('game1_npc_box1', 'assets/images/Game_1/game1_npc_box1.png');
+        this.load.image('game2_npc_box1', 'assets/images/Game_2/game2_npc_box1.png');
+        this.load.image('game2_npc_box4', 'assets/images/Game_2/game2_npc_box4.png');
 
-        this.load.image('npc5_bubble_1', 'assets/images/Game_5/game5_npc_box1.png');
-        this.load.image('npc5_bubble_2', 'assets/images/Game_5/game5_npc_box4.png');
+        this.load.image('game3_npc_box1', 'assets/images/Game_3/game3_npc_box1.png');
+        this.load.image('game4_npc_box1', 'assets/images/Game_4/game4_npc_box1.png');
+        this.load.image('game4_npc_box2', 'assets/images/Game_4/game4_npc_box2.png');
 
-        this.load.image('npc5_bubble_reject', 'assets/images/Game_5/game5_npc_box2.png');
-        this.load.image('npc5_bubble_reject_02', 'assets/images/Game_5/game5_npc_box3.png');
+        this.load.image('game5_npc_box1', 'assets/images/Game_5/game5_npc_box1.png');
+        this.load.image('game5_npc_box2', 'assets/images/Game_5/game5_npc_box2.png');
+        this.load.image('game5_npc_box3', 'assets/images/Game_5/game5_npc_box3.png');
+        this.load.image('game5_npc_box4', 'assets/images/Game_5/game5_npc_box4.png');
 
-        this.load.image('npc6_bubble_1', 'assets/images/Game_6/game6_npc_box3.png');
-        this.load.image('npc6_bubble_2', 'assets/images/Game_6/game6_npc_box4.png');
+        this.load.image('game6_npc_box1', 'assets/images/Game_6/game6_npc_box1.png');
+        this.load.image('game6_npc_box2', 'assets/images/Game_6/game6_npc_box2.png');
+        this.load.image('game6_npc_box3', 'assets/images/Game_6/game6_npc_box3.png');
+        this.load.image('game6_npc_box4', 'assets/images/Game_6/game6_npc_box4.png');
 
-        this.load.image('npc6_bubble_reject', 'assets/images/Game_6/game6_npc_box1.png');
-        this.load.image('npc6_bubble_reject_02', 'assets/images/Game_6/game6_npc_box2.png');
+        this.load.image('game7_npc_box1', 'assets/images/Game_7/game7_npc_box1.png');
+        this.load.image('game7_npc_box2', 'assets/images/Game_7/game7_npc_box2.png');
+        this.load.image('game7_npc_box3', 'assets/images/Game_7/game7_npc_box3.png');
 
-        this.load.image('npc7_bubble_reject', 'assets/images/Game_7/game7_npc_box1.png');
-        this.load.image('npc7_bubble_reject_02', 'assets/images/Game_7/game7_npc_box2.png');
-
-        this.load.image('npc7_bubble_1', 'assets/images/Game_7/game7_npc_box3.png');
-
-        //game 2
-        this.load.image('game2_girl_bubble_2', 'assets/images/Game_2/game2_npc_box2_girl.png');
-        this.load.image('game2_girl_bubble_3', 'assets/images/Game_2/game2_npc_box3_girl.png');
-
-        this.load.image('game2_boy_bubble_2', 'assets/images/Game_2/game2_npc_box2_boy.png');
-        this.load.image('game2_boy_bubble_3', 'assets/images/Game_2/game2_npc_box3_boy.png');
+        //game 2 gendered street bubbles
+        this.load.image('game2_npc_box2_girl', 'assets/images/Game_2/game2_npc_box2_girl.png');
+        this.load.image('game2_npc_box3_girl', 'assets/images/Game_2/game2_npc_box3_girl.png');
+        this.load.image('game2_npc_box2_boy', 'assets/images/Game_2/game2_npc_box2_boy.png');
+        this.load.image('game2_npc_box3_boy', 'assets/images/Game_2/game2_npc_box3_boy.png');
 
 
         // // Only load spritesheets for the selected gender
@@ -178,9 +177,8 @@ export class MainStreetScene extends Phaser.Scene {
     }
 
     create() {
-        if (this.sound.getAll('bgm').length === 0) {
-            this.sound.play('bgm', { loop: true, volume: 0.5 });
-        }
+        this.events.once('shutdown', () => VoiceOverHelper.stop(this));
+        VoiceOverHelper.ensureBgm(this);
 
         this.input.on('pointerup', () => {
             this.isLeftDown = false;
@@ -280,16 +278,13 @@ export class MainStreetScene extends Phaser.Scene {
         });
 
         this.bubbleTimers = [];
-        const npc1_bubbles = ['npc1_bubble_1'];
-        const npc2_bubbles = ['npc2_bubble_1', `game2_${genderKey}_bubble_2`, `game2_${genderKey}_bubble_3`, 'npc2_bubble_4'];
-        const npc3_bubbles = ['npc3_bubble_1'];
-        const npc4_bubbles = ['npc4_bubble_1', 'npc4_bubble_2'];
-        const npc5_bubbles = ['npc5_bubble_1', 'npc5_bubble_2'];
-        const npc5_reject_bubbles = ['npc5_bubble_reject', 'npc5_bubble_reject_02'];
-        const npc6_bubbles = ['npc6_bubble_1', 'npc6_bubble_2'];
-        const npc6_reject_bubbles = ['npc6_bubble_reject', 'npc6_bubble_reject_02'];
-        const npc7_bubbles = ['npc7_bubble_1'];
-        const npc7_reject_bubbles = ['npc7_bubble_reject', 'npc7_bubble_reject_02'];
+        const npc1_bubbles = VoiceOverHelper.getStreetLines(1);
+        const npc2_bubbles = VoiceOverHelper.getStreetLines(2);
+        const npc3_bubbles = VoiceOverHelper.getStreetLines(3);
+        const npc4_bubbles = VoiceOverHelper.getStreetLines(4);
+        const npc5_bubbles = VoiceOverHelper.getStreetLines(5);
+        const npc6_bubbles = VoiceOverHelper.getStreetLines(6);
+        const npc7_bubbles = VoiceOverHelper.getStreetLines(7);
 
         // NPCs (trigger game)
         this.interactiveNpcs = [];
@@ -317,9 +312,11 @@ export class MainStreetScene extends Phaser.Scene {
             npc.on('pointerdown', () => {
                 if (npc.canInteract) {
                     const gameNumber = npcGameMap[npc.id] ?? (index + 1);
-                    const sceneKey = `GameScene_${gameNumber}`;
+                    const locked = !VoiceOverHelper.arePrereqsMet(gameNumber);
+                    const lines = VoiceOverHelper.getStreetLines(gameNumber, locked);
+                    const sceneKey = locked ? null : `GameScene_${gameNumber}`;
                     const characterbubble = `game${gameNumber}_${genderKey}_bubble`;
-                    this.loadBubble(0, npc.bubbles, sceneKey, npc, characterbubble);
+                    this.loadBubble(0, lines, sceneKey, npc, characterbubble);
                 }
             });
         });
@@ -382,6 +379,7 @@ export class MainStreetScene extends Phaser.Scene {
                     this.bubbleTimers = [];
 
                     // 2. Destroy NPC Bubble
+                    VoiceOverHelper.stop(this);
                     if (this.currentActiveBubble) {
                         this.currentActiveBubble.destroy();
                         this.currentActiveBubble = null;
@@ -458,6 +456,7 @@ export class MainStreetScene extends Phaser.Scene {
         // 綁定當前 NPC 到對話框，方便 update 檢查距離
         this.bubbleImg.ownerNpc = targetNpc;
         this.currentActiveBubble = this.bubbleImg;
+        VoiceOverHelper.playBubbleVo(this, bubbles[index]);
 
         this.switchTalkingAnimation(this.genderKey, targetNpc.x < this.playerSprite.x);
 
@@ -483,8 +482,11 @@ export class MainStreetScene extends Phaser.Scene {
 
             this.time.delayedCall(500, () => {
                 if (sceneKey && targetNpc.canInteract) {
+                    VoiceOverHelper.stop(this);
                     localStorage.setItem('playerPosition', JSON.stringify({ x: this.playerSprite.x, y: this.playerSprite.y }));
                     GameManager.switchToGameScene(this, sceneKey);
+                } else {
+                    VoiceOverHelper.stop(this);
                 }
             });
         });

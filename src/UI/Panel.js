@@ -1,4 +1,6 @@
 import { CustomButton, CustomButton2 } from './Button.js';
+import VoiceOverHelper from '../Audio/VoiceOverHelper.js';
+import { gameConfig } from '../config.js';
 /**
  * BASE PANEL CLASS
  * Provides common functionality for all game overlays
@@ -194,9 +196,20 @@ export class SettingPanel extends Phaser.GameObjects.Container {
     }
 
     setLanguage(lang) {
-        if (this.currentLanguage === lang) return; // Skip if no change
-        this.currentLanguage = lang;
+        const next = (lang === 'CN') ? 'CN' : 'HK';
+        const changed = this.currentLanguage !== next;
+        this.currentLanguage = next;
         this.refreshLanguageUI();
+        if (!changed) return;
+        this.persistSettings();
+        VoiceOverHelper.replayCurrent(this.scene);
+    }
+
+    persistSettings() {
+        localStorage.setItem('gameSettings', JSON.stringify({
+            volume: this.currentVolume,
+            language: this.currentLanguage === 'CN' ? 'CN' : 'HK'
+        }));
     }
 
     refreshLanguageUI() {
@@ -212,11 +225,8 @@ export class SettingPanel extends Phaser.GameObjects.Container {
     }
 
     saveToLocal() {
-        const settings = {
-            volume: this.currentVolume,
-            language: this.currentLanguage
-        };
-        localStorage.setItem('gameSettings', JSON.stringify(settings));
+        this.persistSettings();
+        VoiceOverHelper.replayCurrent(this.scene);
         this.hide();
     }
 
@@ -307,7 +317,7 @@ export class ItemsPanel extends Phaser.GameObjects.Container {
 
             // Check if corresponding game (index + 1) is completed
             const gameId = index + 1;
-            const isUnlocked = allResults.find(r => r.game === gameId)?.isFinished;
+            const isUnlocked = gameConfig.isTesting || allResults.find(r => r.game === gameId)?.isFinished;
 
             if (isUnlocked) {
                 const itemBtn = new CustomButton(scene, posX, posY, item.itemKey, item.itemSelectKey, () => {

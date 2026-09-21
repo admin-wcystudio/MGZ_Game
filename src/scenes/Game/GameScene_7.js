@@ -3,6 +3,7 @@ import BaseGameScene from './BaseGameScene.js';
 import { CustomButton } from '../../UI/Button.js';
 import { CustomPanel, CustomFailPanel, QuestionPanel } from '../../UI/Panel.js';
 import GameManager from '../GameManager.js';
+import VoiceOverHelper from '../../Audio/VoiceOverHelper.js';
 
 export class GameScene_7 extends BaseGameScene {
     constructor() {
@@ -12,10 +13,11 @@ export class GameScene_7 extends BaseGameScene {
     preload() {
 
         const path = 'assets/images/Game_7/';
+        VoiceOverHelper.preload(this);
 
         this.load.image('game7_npc_box_win', `${path}game7_npc_box4.png`);
-        this.load.image('game7_npc_box_tryagain', `${path}game7_npc_box5.png`);
-        this.load.image('game7_npc_box6', `${path}game7_npc_box6.png`);
+        this.load.image('game7_npc_box_win_01', `${path}game7_npc_box5.png`);
+        this.load.image('game7_npc_box_tryagain', `${path}game7_npc_box6.png`);
 
         this.load.video('game_success', `${path}game7_success_bg.mp4`);
         this.load.video('game_fail', `${path}game7_fail_bg.mp4`);
@@ -141,9 +143,11 @@ export class GameScene_7 extends BaseGameScene {
     onWinBubbleClose() {
         const centerX = this.cameras.main.width / 2;
         const centerY = this.cameras.main.height * 0.8;
-        this.dialog = this.add.image(centerX, centerY, 'game7_npc_box6')
+        this.dialog = this.add.image(centerX, centerY, 'game7_npc_box_win_01')
             .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+        VoiceOverHelper.playBubbleVo(this, 'game7_npc_box_win_01');
         this.dialog.on('pointerdown', () => {
+            VoiceOverHelper.stop(this);
             this.dialog.destroy();
             this.dialog = null;
             super.onWinBubbleClose();
