@@ -1,3 +1,5 @@
+import VoiceOverHelper from '../Audio/VoiceOverHelper.js';
+
 export class BootScene extends Phaser.Scene {
     constructor() {
         super('BootScene');
@@ -7,6 +9,7 @@ export class BootScene extends Phaser.Scene {
         this.load.plugin('rexinputtextplugin', 'https://cdn.jsdelivr.net/npm/phaser3-rex-plugins@1.80.17/dist/rexinputtextplugin.min.js', true);
 
         this.load.audio('bgm', 'assets/music/bgm.mp3');
+        VoiceOverHelper.preload(this);
         // Load assets for the boot scene
         const gameStartPath = 'assets/images/GameStart/';
 
@@ -68,7 +71,8 @@ export class BootScene extends Phaser.Scene {
             'game1_object_description',
             'itempage_item2_select',
             'itempage_item2',
-            ['game2_object_description1', 'game2_object_description2'],
+            'game2_object_description1',
+            'game2_object_description2',
             'itempage_item3',
             'itempage_item3_select',
             'game3_object_description',
@@ -124,8 +128,9 @@ export class BootScene extends Phaser.Scene {
 
         // load game bg
         for (let i = 1; i <= 7; i++) {
-            if (i === 2) continue; // skip game 2 description as it is not used
-            this.load.image(`game${i}_description`, `assets/images/Game_${i}/game${i}_description.png`);// skip game 5 bg as it is not used
+            if (i !== 2) {
+                this.load.image(`game${i}_description`, `assets/images/Game_${i}/game${i}_description.png`);
+            }
             this.load.image(`game${i}_bg`, `assets/images/Game_${i}/game${i}_bg.png`);
         }
 

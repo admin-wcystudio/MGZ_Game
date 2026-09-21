@@ -2,6 +2,7 @@ import BaseGameScene from './BaseGameScene.js';
 import { CustomButton } from '../../UI/Button.js';
 import { CustomPanel, CustomFailPanel } from '../../UI/Panel.js';
 import GameManager from '../GameManager.js';
+import VoiceOverHelper from '../../Audio/VoiceOverHelper.js';
 
 export class GameScene_2 extends BaseGameScene {
     constructor() {
@@ -9,13 +10,14 @@ export class GameScene_2 extends BaseGameScene {
     }
     preload() {
         const path = 'assets/images/Game_2/';
+        VoiceOverHelper.preload(this);
 
         this.width = this.cameras.main.width;
         this.height = this.cameras.main.height;
         this.centerX = this.width / 2;
         this.centerY = this.height / 2;
 
-        this.gender = 'F';
+        this.gender = 'M';
         if (localStorage.getItem('player')) {
             this.gender = JSON.parse(localStorage.getItem('player')).gender;
         }
@@ -24,7 +26,7 @@ export class GameScene_2 extends BaseGameScene {
 
         this.load.image('game2_npc_box_mainstreet', `${path}game2_npc_box1.png`);
 
-        if (this.gender === '') {
+        if (this.gender === 'M') {
             this.load.image('game2_npc_box_mainstreet_01', `${path}game2_npc_box2_boy.png`);
             this.load.image('game2_npc_box_mainstreet_02', `${path}game2_npc_box3_boy.png`);
         } else {
@@ -113,6 +115,7 @@ export class GameScene_2 extends BaseGameScene {
 
     create() {
         this.createAnimations();
+
         // Movement settings
         this.moveStep = 58;  // Pixels per move
         this.isMoving = false;
@@ -154,12 +157,15 @@ export class GameScene_2 extends BaseGameScene {
 
         // Use frontstop for boy, frontwalking for girl (girl_frontstop doesn't exist)
         const idleKey = this.gender === 'M' ? 'frontstop' : 'frontwalking';
-        this.idleAnimKey = `${this.genderKey}_${idleKey}_anim`;
+        this.idleAnimKey = this.gender === 'M'
+            ? `${this.genderKey}_${idleKey}_anim`
+            : 'girl_frontstop_anim';
         this.lastDirection = 'down';
 
         // Create player at starting position as a normal sprite (NO physics body)
         this.player = this.add.sprite(this.playerStartX, this.playerStartY, `${this.genderKey}_${idleKey}`)
             .setOrigin(0.5, 0.5).setDepth(2).setScale(2);
+        this.player.anims.play(this.idleAnimKey, true);
 
         this.failObjects = [];
         this.successObjects = [];
@@ -213,7 +219,7 @@ export class GameScene_2 extends BaseGameScene {
         // Interior walls
         this.createWall(800 - 5, 460, 260, 190, debugVisible, true);
         this.createWall(this.centerX - 520, this.centerY + 130, 250, 240, debugVisible, true);
-        this.createWall(this.centerX - 430, this.centerY + 90, 430, 150, debugVisible, true);
+        this.createWall(this.centerX - 430, this.centerY + 75, 430, 160, debugVisible, true);
 
         //start left
         this.createWall(this.centerX - 170, this.centerY + 330, 250, 150, debugVisible, true);
@@ -287,7 +293,7 @@ export class GameScene_2 extends BaseGameScene {
                 walkAnimKey = `${this.genderKey}_frontwalking_anim`;
                 stopAnimKey = this.gender === 'M'
                     ? `${this.genderKey}_frontstop_anim`
-                    : `${this.genderKey}_frontwalking_anim`;
+                    : 'girl_frontstop_anim';
                 break;
         }
 
@@ -339,11 +345,10 @@ export class GameScene_2 extends BaseGameScene {
 
     /** Check collision with fail objects using distance */
     checkFailCollision() {
-        const hitRadius = 60;
-        const feetY = this.player.y + 70;
+        const hitRadius = 50;
         for (const failObj of this.failObjects) {
             if (!failObj.visible) continue;
-            const dist = Phaser.Math.Distance.Between(this.player.x, feetY, failObj.x, failObj.y);
+            const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, failObj.x, failObj.y);
             if (dist < hitRadius) {
                 failObj.setVisible(false);
                 this.collectedFailObjects++;
@@ -360,11 +365,10 @@ export class GameScene_2 extends BaseGameScene {
 
     /** Check collection of success objects using distance */
     checkSuccessCollection() {
-        const pickupRadius = 60;
-        const feetY = this.player.y + 70;
+        const pickupRadius = 50;
         for (const successObj of this.successObjects) {
             if (!successObj.visible) continue;
-            const dist = Phaser.Math.Distance.Between(this.player.x, feetY, successObj.x, successObj.y);
+            const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, successObj.x, successObj.y);
             if (dist < pickupRadius) {
                 successObj.setVisible(false);
                 this.collectedSuccessObjects++;
@@ -512,7 +516,9 @@ export class GameScene_2 extends BaseGameScene {
 
         this.win_02 = this.add.image(centerX, centerY, 'game2_npc_box_win_01')
             .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+        VoiceOverHelper.playBubbleVo(this, 'game2_npc_box_win_01');
         this.win_02.once('pointerdown', () => {
+            VoiceOverHelper.stop(this);
             this.win_02.destroy();
             this.win_02 = null;
             super.onWinBubbleClose();
@@ -524,18 +530,13 @@ export class GameScene_2 extends BaseGameScene {
     }
 
     showObjectPanel() {
-        const objectPanel = new CustomPanel(this, 960, 600, [
-            {
-                content: 'game2_object_description1',
-                closeBtn: 'close_btn', closeBtnClick: 'close_btn_click'
-            },
-            {
-                content: 'game2_object_description2',
-                closeBtn: 'close_btn', closeBtnClick: 'close_btn_click'
-            }
-        ]);
-        objectPanel.setNextBtnPosition(0, 50);
-        objectPanel.setPrevBtnPosition(0, 50);
+        const objectPanel = new CustomPanel(this, 960, 600, [{
+            content: 'game2_object_description1',
+        }, {
+            content: 'game2_object_description2',
+        }]);
+        objectPanel.prevBtn.setY(340);
+        objectPanel.nextBtn.setY(340);
         objectPanel.setDepth(1000);
         objectPanel.show();
         objectPanel.setCloseCallBack(() => GameManager.backToMainStreet(this));
@@ -546,8 +547,10 @@ export class GameScene_2 extends BaseGameScene {
         const centerY = this.cameras.main.height * 0.8;
         this.lose_01 = this.add.image(centerX, centerY, 'game2_npc_box_tryagain_01')
             .setInteractive({ useHandCursor: true }).setDepth(566).setVisible(true);
+        VoiceOverHelper.playBubbleVo(this, 'game2_npc_box_tryagain_01');
 
         this.lose_01.on('pointerdown', () => {
+            VoiceOverHelper.stop(this);
             this.lose_01.destroy();
             this.lose_01 = null;
             super.onLoseBubbleClose();
@@ -612,7 +615,7 @@ export class GameScene_2 extends BaseGameScene {
             // Girl animations
             this.anims.create({
                 key: 'girl_backstop_anim',
-                frames: this.anims.generateFrameNumbers('girl_backstop', { start: 0, end: 66 }),
+                frames: this.anims.generateFrameNumbers('girl_backstop', { start: 0, end: 47 }),
                 frameRate: 30,
                 repeat: -1
             });
@@ -624,8 +627,14 @@ export class GameScene_2 extends BaseGameScene {
             });
             this.anims.create({
                 key: 'girl_frontwalking_anim',
-                frames: this.anims.generateFrameNumbers('girl_frontwalking', { start: 0, end: 66 }),
+                frames: this.anims.generateFrameNumbers('girl_frontwalking', { start: 0, end: 49 }),
                 frameRate: 30,
+                repeat: -1
+            });
+            this.anims.create({
+                key: 'girl_frontstop_anim',
+                frames: this.anims.generateFrameNumbers('girl_frontwalking', { start: 0, end: 0 }),
+                frameRate: 1,
                 repeat: -1
             });
             this.anims.create({
@@ -648,8 +657,8 @@ export class GameScene_2 extends BaseGameScene {
             });
             this.anims.create({
                 key: 'girl_rightwalking_anim',
-                frames: this.anims.generateFrameNumbers('girl_rightwalking', { start: 16, end: 47 }),
-                frameRate: 30,
+                frames: this.anims.generateFrameNumbers('girl_rightwalking', { start: 16, end: 66 }),
+                frameRate: 24,
                 repeat: -1
             });
         }
