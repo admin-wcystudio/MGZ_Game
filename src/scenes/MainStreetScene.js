@@ -177,6 +177,7 @@ export class MainStreetScene extends Phaser.Scene {
     }
 
     create() {
+        GameManager.startSessionClock();
         this.events.once('shutdown', () => VoiceOverHelper.stop(this));
         VoiceOverHelper.ensureBgm(this);
 
